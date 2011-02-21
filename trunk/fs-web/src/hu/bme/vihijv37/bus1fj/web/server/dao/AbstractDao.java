@@ -8,8 +8,12 @@ import javax.persistence.Query;
 public abstract class AbstractDao {
 
     @SuppressWarnings("unchecked")
-    public static <T> List<T> getResultList(Query query, Class<T> clazz) {
-	return query.getResultList();
+    public static <T> List<T> getResultList(Query query, Class<T> clazz) throws DaoException {
+	try {
+	    return query.getResultList();
+	} catch (RuntimeException e) {
+	    throw new DaoException("Could not get result list", e);
+	}
     }
 
     private final EntityManager entityManager;
