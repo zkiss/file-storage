@@ -20,15 +20,21 @@ public class FsServiceDao extends AbstractDao {
      * @param passwordHash
      *            a felhasználó jelszavának MD5 hash-e
      * @return
+     * @throws DaoException
+     *             ha a JPA lekérdezés nem futott le sikeresen
      */
-    public User getUser(String email, String passwordHash) {
-	List<User> users = AbstractDao.getResultList(this.getEntityManager().createQuery( //
-		"select u from " + User.class.getSimpleName() + " u" + //
-			" where u.email = :email" + //
-			" and u.password = :pwHash"). //
-		setParameter("email", email). //
-		setParameter("pwHash", passwordHash), User.class);
-	return users.size() == 1 ? users.get(0) : null;
+    public User getUser(String email, String passwordHash) throws DaoException {
+	try {
+	    List<User> users = AbstractDao.getResultList(this.getEntityManager().createQuery( //
+		    "select u from " + User.class.getSimpleName() + " u" + //
+			    " where u.email = :email" + //
+			    " and u.password = :pwHash"). //
+		    setParameter("email", email). //
+		    setParameter("pwHash", passwordHash), User.class);
+	    return users.size() == 1 ? users.get(0) : null;
+	} catch (RuntimeException e) {
+	    throw new DaoException(e.getMessage(), e);
+	}
     }
 
 }
