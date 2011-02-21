@@ -7,6 +7,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * Felhasználók által feltöltött fájl reprezentációja
+ * 
+ * @author Zoltan Kiss
+ */
 @Entity
 @Table(name = "FILE")
 public class File extends EntityBase {
@@ -20,10 +25,20 @@ public class File extends EntityBase {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
+    /**
+     * A fájl relatív elérési útja a szerveren
+     * 
+     * @return
+     */
     public String getPath() {
 	return this.path;
     }
 
+    /**
+     * A fájlt feltöltő felhasználó
+     * 
+     * @return
+     */
     public User getUser() {
 	return this.user;
     }

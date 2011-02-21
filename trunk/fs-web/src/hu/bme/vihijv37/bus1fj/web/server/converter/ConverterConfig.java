@@ -5,6 +5,10 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 
 import hu.bme.vihijv37.bus1fj.web.server.converter.conversion.ConversionDefinition;
+import hu.bme.vihijv37.bus1fj.web.server.entity.File;
+import hu.bme.vihijv37.bus1fj.web.server.entity.User;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,9 +30,8 @@ class ConverterConfig {
     static {
 	CONVERSION_DEFINITIONS = new LinkedList<ConversionDefinition>();
 
-	// TODO config
-	// ConverterConfig.CONVERSION_DEFINITIONS.add(new
-	// ConversionDefinition(User.class, User.class));
+	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(User.class, UserDto.class));
+	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(File.class, FileDto.class));
 
 	BURNT_IN_CONFIG = new ConverterConfig(ConverterConfig.CONVERSION_DEFINITIONS);
     }
