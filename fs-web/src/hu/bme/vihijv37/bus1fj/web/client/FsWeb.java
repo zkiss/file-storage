@@ -7,10 +7,8 @@ public class FsWeb implements EntryPoint {
 
     private final FsServiceAsync greetingService = GWT.create(FsService.class);
 
-    /**
-     * This is the entry point method.
-     */
     @Override
     public void onModuleLoad() {
     }
+
 }

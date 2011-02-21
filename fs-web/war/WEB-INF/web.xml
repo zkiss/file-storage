@@ -7,12 +7,12 @@
 
 	<!-- Servlets -->
 	<servlet>
-		<servlet-name>greetServlet</servlet-name>
+		<servlet-name>fsServlet</servlet-name>
 		<servlet-class>hu.bme.vihijv37.bus1fj.web.server.FsServiceImpl</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>greetServlet</servlet-name>
+		<servlet-name>fsServlet</servlet-name>
 		<url-pattern>/FsWeb/fs</url-pattern>
 	</servlet-mapping>
 
