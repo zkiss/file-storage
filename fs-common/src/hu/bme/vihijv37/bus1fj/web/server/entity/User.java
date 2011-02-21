@@ -9,6 +9,11 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+/**
+ * Felhasználó
+ * 
+ * @author Zoltan Kiss
+ */
 @Entity
 @Table(name = "USER")
 public class User extends EntityBase {
@@ -27,18 +32,38 @@ public class User extends EntityBase {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<File> files = new HashSet<File>();
 
+    /**
+     * A felhasználó e-mail címe
+     * 
+     * @return
+     */
     public String getEmail() {
 	return this.email;
     }
 
+    /**
+     * A felhasználó által feltöltött fájlok
+     * 
+     * @return
+     */
     public Set<File> getFiles() {
 	return this.files;
     }
 
+    /**
+     * A felhasználó neve
+     * 
+     * @return
+     */
     public String getName() {
 	return this.name;
     }
 
+    /**
+     * A felhasználó jelszavának MD5 hash-e
+     * 
+     * @return
+     */
     public String getPassword() {
 	return this.password;
     }

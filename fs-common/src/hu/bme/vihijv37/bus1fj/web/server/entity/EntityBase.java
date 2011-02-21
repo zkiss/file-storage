@@ -24,6 +24,11 @@ public abstract class EntityBase implements Serializable {
     @GeneratedValue
     long id;
 
+    /**
+     * Entitások esetén az egyenlőség csak olyankor igaz, ha az adatbázis beli
+     * azonosítójuk megegyezik. Nem commitált entitások esetén referencia
+     * szerinti egyezőség kell, hiszen akkor még nincsen azonosítója.
+     */
     @Override
     public final boolean equals(Object obj) {
 	boolean ret;
@@ -48,10 +53,18 @@ public abstract class EntityBase implements Serializable {
 	return ret;
     }
 
+    /**
+     * Az entitás adatbázis beli azonosítója
+     * 
+     * @return
+     */
     public final long getId() {
 	return this.id;
     }
 
+    /**
+     * HashCode generálása az ID alapján történik
+     */
     @Override
     public final int hashCode() {
 	return Long.valueOf(this.id).hashCode();
