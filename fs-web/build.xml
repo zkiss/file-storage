@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="fs-web" default="dist">
+
+	<import file="../build/common.xml" />
+	<property name="bin-gwt" value="${ant}\gwt" />
+	<property name="war" value="war" />
+	<property name="gwt.module.name" value="FsWeb" />
+
+	<path id="path-gwt">
+		<filelist dir="${dir-lib}\gwt-2.2.0">
+			<file name="gwt-dev.jar" />
+			<file name="gwt-user.jar" />
+		</filelist>
+	</path>
+
+	<target name="clean">
+		<delete dir="${ant}" />
+	</target>
+
+	<target name="javac">
+		<mkdir dir="${bin}" />
+		<javac destdir="${bin}" classpathref="path-lib-common" srcdir="${src}" encoding="${encoding}">
+			<classpath>
+				<path refid="path-gwt" />
+				<pathelement location="${dir-common}\${bin}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="gwtc" depends="javac" description="GWT compile to JavaScript">
+		<mkdir dir="${bin-gwt}" />
+		<java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+			<classpath>
+				<pathelement location="${src}" />
+				<path location="${dir-common}\${bin}" />
+				<path refid="path-lib-common" />
+				<path refid="path-gwt" />
+			</classpath>
+			<jvmarg value="-Xmx256M" />
+			<arg value="-logLevel" />
+			<arg value="INFO" />
+			<arg value="-draftCompile" />
+			<arg value="-war" />
+			<arg value="${bin-gwt}" />
+			<arg value="hu.bme.viaum105.web.Web" />
+		</java>
+	</target>
+
+	<target name="dist" depends="clean, gwtc">
+		<mkdir dir="${dist}" />
+		<war destfile="${dist}\${ant.project.name}.war" webxml="${war}\WEB-INF\web.xml" update="false">
+			<fileset dir="${bin-gwt}" />
+			<fileset dir="${war}">
+				<exclude name="${gwt.module.name}\**\*" />
+				<exclude name="WEB-INF\**\*" />
+			</fileset>
+			<lib dir="${war}\WEB-INF\lib" />
+			<classes dir="${war}">
+				<include name="${bin}\**\*" />
+				<include name="src\**\*" />
+				<exclude name="src\**\*.java" />
+			</classes>
+			<webinf dir="${war}\WEB-INF" excludes="lib\*" />
+		</war>
+	</target>
+
+	<target name="deploy" depends="dist">
+		<copy todir="${jboss.server}\deploy" overwrite="true">
+			<fileset dir="${dist}" />
+		</copy>
+	</target>
+
+</project>
+
