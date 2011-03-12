@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="fs-common" default="dist">
+
+	<import file="../build/common.xml" />
+
+	<target name="clean">
+		<delete dir="${ant}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${bin}" />
+		<javac destdir="${bin}" classpathref="path-lib-common" srcdir="${src}" encoding="${encoding}" />
+	</target>
+
+	<target name="dist" depends="clean, compile">
+		<mkdir dir="${dist}" />
+		<jar destfile="${dist}\${ant.project.name}.jar">
+			<fileset dir="${bin}" />
+			<fileset dir="src" excludes="**/*.java" />
+		</jar>
+	</target>
+
+</project>
+
