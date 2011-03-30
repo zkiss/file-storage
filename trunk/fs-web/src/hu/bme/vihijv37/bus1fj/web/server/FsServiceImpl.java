@@ -23,11 +23,11 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
     private static final Log LOG = LogFactory.getLog(FsServiceImpl.class);
 
     @Override
-    public UserDto login(String userName, String passwordHash) throws ServiceException {
+    public UserDto login(String userName, String password) throws ServiceException {
 	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
 	User user;
 	try {
-	    user = new FsServiceDao(emf.createEntityManager()).getUser(userName, passwordHash);
+	    user = new FsServiceDao(emf.createEntityManager()).getUser(userName, password);
 	    if (user == null) {
 		throw new ServiceException("No such user");
 	    }
