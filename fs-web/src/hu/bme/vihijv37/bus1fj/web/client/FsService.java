@@ -14,12 +14,12 @@ public interface FsService extends RemoteService {
      * 
      * @param email
      *            a felhasználó e-mail címe
-     * @param passwordHash
-     *            a felhasználó jelszavának MD5 hash-e
+     * @param password
+     *            a felhasználó jelszava
      * @return A bejelentkezett felhasználó
      * @throws ServiceException
      *             ha sikertelen a bejelentkezés
      */
-    public UserDto login(String email, String passwordHash) throws ServiceException;
+    public UserDto login(String email, String password) throws ServiceException;
 
 }

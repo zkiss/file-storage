@@ -8,10 +8,10 @@ public interface FsServiceAsync {
 
     /**
      * @param userName
-     * @param passwordHash
+     * @param password
      * @param callback
      * @see FsService#login(String, String)
      */
-    void login(String userName, String passwordHash, AsyncCallback<UserDto> callback);
+    void login(String userName, String password, AsyncCallback<UserDto> callback);
 
 }
