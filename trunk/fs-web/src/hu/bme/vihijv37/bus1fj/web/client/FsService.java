@@ -22,4 +22,19 @@ public interface FsService extends RemoteService {
      */
     public UserDto login(String email, String password) throws ServiceException;
 
+    /**
+     * Regisztráció.
+     * 
+     * @param name
+     *            a felhasználó neve
+     * @param email
+     *            a felhasználó email címe
+     * @param password
+     *            a felhasználó jelszava
+     * 
+     * @return
+     * @throws ServiceException
+     *             ha sikertelen a regisztráció
+     */
+    public UserDto register(String name, String email, String password) throws ServiceException;
 }

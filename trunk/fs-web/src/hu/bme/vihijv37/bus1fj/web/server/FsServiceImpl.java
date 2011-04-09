@@ -1,6 +1,8 @@
 package hu.bme.vihijv37.bus1fj.web.server;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -40,4 +42,28 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	    throw new ServiceException("Could not convert Entity to DTO");
 	}
     }
+
+    @Override
+    public UserDto register(String name, String email, String password) throws ServiceException {
+	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
+	EntityManager em = emf.createEntityManager();
+	EntityTransaction transaction = em.getTransaction();
+	User user;
+	try {
+	    transaction.begin();
+	    // TODO pass hash
+	    user = new FsServiceDao(em).insertUser(name, email, password);
+	    transaction.commit();
+	    return Converter.convert(user);
+	} catch (DaoException ex) {
+	    FsServiceImpl.LOG.error(ex.getMessage(), ex);
+	    transaction.rollback();
+	    throw new ServiceException("Could not insert user to db");
+	} catch (ConverterException e) {
+	    FsServiceImpl.LOG.error(e.getMessage(), e);
+	    transaction.rollback();
+	    throw new ServiceException("Could not convert Entity to DTO");
+	}
+    }
+
 }

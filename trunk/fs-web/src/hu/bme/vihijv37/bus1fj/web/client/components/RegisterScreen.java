@@ -2,6 +2,7 @@ package hu.bme.vihijv37.bus1fj.web.client.components;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -10,17 +11,21 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import hu.bme.vihijv37.bus1fj.web.client.GWTServiceUtil;
+import hu.bme.vihijv37.bus1fj.web.client.Session;
+import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
+
 public class RegisterScreen extends VerticalPanel {
 
-    private FlexTable contentTable;
-    private TextBox emailTextBox;
-    private TextBox userNameTextBox;
-    private PasswordTextBox passwordTextBox;
-    private PasswordTextBox reTypePasswordTextBox;
-    private Button registerButton;
+    private final TextBox emailTextBox;
+    private final TextBox userNameTextBox;
+    private final PasswordTextBox passwordTextBox;
+    private final PasswordTextBox reTypePasswordTextBox;
+    private final Button registerButton;
 
     public RegisterScreen() {
-	this.contentTable = new FlexTable();
+	FlexTable contentTable = new FlexTable();
 	this.emailTextBox = new TextBox();
 	this.userNameTextBox = new TextBox();
 	this.passwordTextBox = new PasswordTextBox();
@@ -29,14 +34,43 @@ public class RegisterScreen extends VerticalPanel {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
-		// TODO Auto-generated method stub
+		if (RegisterScreen.this.checkFields()) {
+		    GWTServiceUtil.getService().register(RegisterScreen.this.userNameTextBox.getSelectedText(),
+			    RegisterScreen.this.emailTextBox.getSelectedText(), RegisterScreen.this.passwordTextBox.getSelectedText(),
+			    new AsyncCallback<UserDto>() {
+				@Override
+				public void onFailure(Throwable caught) {
+				    caught.printStackTrace();
+				};
 
+				@Override
+				public void onSuccess(UserDto result) {
+				    Session.getInstance().setCurrentUser(result);
+				};
+			    });
+		} else {
+		    MessageDialog.show("Message", "Please fill all field!", null);
+		}
 	    }
 	});
-
 	this.initPanel();
-	this.setupContentTable();
-	this.add(this.contentTable);
+	this.setupContentTable(contentTable);
+
+	this.add(contentTable);
+    }
+
+    private boolean checkFields() {
+	boolean ret = true;
+	if ("".equals(this.userNameTextBox.getText())) {
+	    ret = false;
+	}
+	if ("".equals(this.passwordTextBox.getText())) {
+	    ret = false;
+	}
+	if ("".equals(this.emailTextBox.getText())) {
+	    ret = false;
+	}
+	return ret;
     }
 
     private void initPanel() {
@@ -45,32 +79,38 @@ public class RegisterScreen extends VerticalPanel {
 	this.setWidth("820px");
     }
 
-    private void setupContentTable() {
-	this.contentTable.setWidth("300px");
-	this.contentTable.getCellFormatter().setWidth(0, 0, "150px");
-	this.contentTable.getCellFormatter().setWidth(0, 1, "150px");
+    private void setupContentTable(FlexTable contentTable) {
+	int row = 0;
+	contentTable.setWidth("300px");
+	contentTable.getCellFormatter().setWidth(0, 0, "150px");
+	contentTable.getCellFormatter().setWidth(0, 1, "150px");
 
-	this.contentTable.getCellFormatter().setWidth(1, 0, "150px");
-	this.contentTable.getCellFormatter().setWidth(1, 1, "150px");
+	contentTable.getCellFormatter().setWidth(1, 0, "150px");
+	contentTable.getCellFormatter().setWidth(1, 1, "150px");
 
-	this.contentTable.setText(0, 0, "E-mail");
-	this.contentTable.setWidget(0, 1, this.emailTextBox);
+	contentTable.setText(row, 0, "E-mail");
+	contentTable.setWidget(row, 1, this.emailTextBox);
 	this.emailTextBox.setWidth("150px");
+	row++;
 
-	this.contentTable.setText(1, 0, "Name");
-	this.contentTable.setWidget(1, 1, this.userNameTextBox);
+	contentTable.setText(row, 0, "Name");
+	contentTable.setWidget(row, 1, this.userNameTextBox);
 	this.userNameTextBox.setWidth("150px");
+	row++;
 
-	this.contentTable.setText(2, 0, "Password");
-	this.contentTable.setWidget(2, 1, this.passwordTextBox);
+	contentTable.setText(row, 0, "Password");
+	contentTable.setWidget(row, 1, this.passwordTextBox);
 	this.passwordTextBox.setWidth("150px");
+	row++;
 
-	this.contentTable.setText(3, 0, "Confirm password");
-	this.contentTable.setWidget(3, 1, this.reTypePasswordTextBox);
+	contentTable.setText(row, 0, "Confirm password");
+	contentTable.setWidget(row, 1, this.reTypePasswordTextBox);
 	this.reTypePasswordTextBox.setWidth("150px");
+	row++;
 
-	this.contentTable.getFlexCellFormatter().setColSpan(4, 0, 2);
-	this.contentTable.getCellFormatter().setHorizontalAlignment(4, 0, HasHorizontalAlignment.ALIGN_RIGHT);
-	this.contentTable.setWidget(4, 0, this.registerButton);
+	contentTable.getFlexCellFormatter().setColSpan(row, 0, 2);
+	contentTable.getCellFormatter().setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT);
+	contentTable.setWidget(row, 0, this.registerButton);
+
     }
 }
