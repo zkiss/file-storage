@@ -37,4 +37,17 @@ public class FsServiceDao extends AbstractDao {
 	}
     }
 
+    public User insertUser(String name, String email, String password) throws DaoException {
+	try {
+	    User user = new User();
+	    user.setEmail(email);
+	    user.setName(name);
+	    user.setPassword(password);
+	    this.getEntityManager().persist(user);
+	    return user;
+	} catch (RuntimeException e) {
+	    throw new DaoException(e.getMessage(), e);
+	}
+    }
+
 }
