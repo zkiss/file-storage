@@ -3,6 +3,9 @@ package hu.bme.vihijv37.bus1fj.web.client.components;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -39,28 +42,31 @@ public class LoginScreen extends VerticalPanel {
 	this.contentTable = new FlexTable();
 	this.userNameTextBox = new TextBox();
 	this.passwordTextBox = new PasswordTextBox();
+	this.passwordTextBox.addKeyDownHandler(new KeyDownHandler() {
+
+	    @Override
+	    public void onKeyDown(KeyDownEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    LoginScreen.this.doLogin();
+		}
+	    }
+	});
+
+	this.userNameTextBox.addKeyDownHandler(new KeyDownHandler() {
+
+	    @Override
+	    public void onKeyDown(KeyDownEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    LoginScreen.this.doLogin();
+		}
+	    }
+	});
+
 	this.loginBtn = new Button("Login", new ClickHandler() {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
-		if (LoginScreen.this.checkFields()) {
-		    GWTServiceUtil.getService().login(LoginScreen.this.userNameTextBox.getSelectedText(), LoginScreen.this.passwordTextBox.getSelectedText(),
-			    new AsyncCallback<UserDto>() {
-
-				@Override
-				public void onFailure(Throwable caught) {
-				    MessageDialog.show("Error", "Incorrect password and/or username", null);
-				}
-
-				@Override
-				public void onSuccess(UserDto result) {
-				    Session.getInstance().setCurrentUser(result);
-				    // TODO kezdooldalra navigal
-				}
-			    });
-		} else {
-		    MessageDialog.show("Error", "Please enter your username and password!", null);
-		}
+		LoginScreen.this.doLogin();
 	    }
 	});
 	this.linkToRegisterLabel = new Label("Create a free account now!");
@@ -85,6 +91,7 @@ public class LoginScreen extends VerticalPanel {
 	this.createRegisterNowPanel();
 	this.add(this.contentTable);
 	this.add(this.registerNowPanel);
+	this.userNameTextBox.setFocus(true);
     }
 
     private void createRegisterNowPanel() {
@@ -104,6 +111,31 @@ public class LoginScreen extends VerticalPanel {
 
 	this.registerNowPanel.add(new Label("Not registered?"));
 	this.registerNowPanel.add(this.linkToRegisterLabel);
+    }
+
+    private void doLogin() {
+	if (LoginScreen.this.checkFields()) {
+	    GWTServiceUtil.getService().login(LoginScreen.this.userNameTextBox.getSelectedText(), LoginScreen.this.passwordTextBox.getSelectedText(),
+		    new AsyncCallback<UserDto>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			    MessageDialog.show("Error", "Incorrect password and/or username", null);
+			    RootPanel.get("main").clear();
+			    RootPanel.get("main").add(new WelcomePanel());
+			}
+
+			@Override
+			public void onSuccess(UserDto result) {
+			    Session.getInstance().setCurrentUser(result);
+			    RootPanel.get("main").clear();
+			    RootPanel.get("main").add(new WelcomePanel());
+			}
+		    });
+	} else {
+	    MessageDialog.show("Error", "Please enter your username and password!", null);
+	}
+
     }
 
     private void initPanel() {
