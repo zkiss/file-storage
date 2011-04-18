@@ -37,4 +37,5 @@ public interface FsService extends RemoteService {
      *             ha sikertelen a regisztráció
      */
     public UserDto register(String name, String email, String password) throws ServiceException;
+
 }
