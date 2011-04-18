@@ -1,23 +1,27 @@
 /** Add css rules here for your application. */
 #page {
-	width: 880px;	
+	width: 880px;
 	margin: auto;
 }
 
 #top {
 	width: 880px;
 	background-color: #44657F;
-	height: 70px;	
+	height: 70px;
 }
 
 #main {
 	width: 820px;
 	padding: 30px;
-	background-color: white;	
+	background-color: white;
 }
 
 .link {
 	cursor: pointer;
 	color: #6CA1CC;
-	text-decoration: underline;	
+	text-decoration: underline;
+}
+
+.topGridCell {
+	border-right: solid black 1px;		
 }
