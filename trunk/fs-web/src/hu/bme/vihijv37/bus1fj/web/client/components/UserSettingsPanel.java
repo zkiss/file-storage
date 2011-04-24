@@ -29,7 +29,7 @@ public class UserSettingsPanel extends VerticalPanel {
     private UserDto currentUser = Session.getInstance().getCurrentUser();
 
     public UserSettingsPanel() {
-	this.add(new WelcomeTopPanel());
+	this.add(new MenuPanel());
 	Grid grid = new Grid(5, 2);
 
 	int row = 0;
