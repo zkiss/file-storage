@@ -66,4 +66,27 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	}
     }
 
+    @Override
+    public UserDto updateUser(UserDto userDto) throws ServiceException {
+	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
+	EntityManager em = emf.createEntityManager();
+	EntityTransaction transaction = em.getTransaction();
+	User user;
+	try {
+	    transaction.begin();
+	    // TODO pass hash
+	    user = new FsServiceDao(em).updateUser(userDto);
+	    transaction.commit();
+	    return Converter.convert(user);
+	} catch (DaoException ex) {
+	    FsServiceImpl.LOG.error(ex.getMessage(), ex);
+	    transaction.rollback();
+	    throw new ServiceException("Could not insert user to db");
+	} catch (ConverterException e) {
+	    FsServiceImpl.LOG.error(e.getMessage(), e);
+	    transaction.rollback();
+	    throw new ServiceException("Could not convert Entity to DTO");
+	}
+    }
+
 }
