@@ -1,13 +1,25 @@
 package hu.bme.vihijv37.bus1fj.web.client;
 
+import java.util.Set;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
 @RemoteServiceRelativePath("fs")
 public interface FsService extends RemoteService {
+
+    /**
+     * Visszaadja az összes file-t, melyet az adott user feltöltött
+     * 
+     * @param user
+     * @return
+     * @throws ServiceException
+     */
+    public Set<FileDto> getUserFiles(UserDto user) throws ServiceException;
 
     /**
      * Bejelentkezés.
@@ -39,6 +51,14 @@ public interface FsService extends RemoteService {
     public UserDto register(String name, String email, String password) throws ServiceException;
 
     /**
+     * A megadott file eltávolítása az adatbázisból
+     * 
+     * @param file
+     * @throws ServiceException
+     */
+    public void removeFile(FileDto file) throws ServiceException;
+
+    /**
      * User adatainak módosítása
      * 
      * @param user
@@ -46,5 +66,4 @@ public interface FsService extends RemoteService {
      * @throws ServiceException
      */
     public UserDto updateUser(UserDto user) throws ServiceException;
-
 }
