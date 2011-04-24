@@ -23,5 +23,10 @@
 }
 
 .topGridCell {
-	border-right: solid black 1px;		
+	border-right: solid black 1px;
+}
+
+.tableRow {
+	border: none;
+	border-bottom: dotted 1px gray;		
 }
