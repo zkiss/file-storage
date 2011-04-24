@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import hu.bme.vihijv37.bus1fj.web.server.entity.File;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
 public class FsServiceDao extends AbstractDao {
@@ -50,6 +52,18 @@ public class FsServiceDao extends AbstractDao {
 	}
     }
 
+    public void insertFile(String path, long userId) throws DaoException {
+	try {
+	    File file = new File();
+	    User user = this.findUserById(userId);
+	    file.setPath(path);
+	    file.setUser(user);
+	    this.getEntityManager().persist(file);
+	} catch (RuntimeException ex) {
+	    throw new DaoException(ex.getMessage(), ex);
+	}
+    }
+
     public User insertUser(String name, String email, String password) throws DaoException {
 	try {
 	    User user = new User();
@@ -60,6 +74,17 @@ public class FsServiceDao extends AbstractDao {
 	    return user;
 	} catch (RuntimeException e) {
 	    throw new DaoException(e.getMessage(), e);
+	}
+    }
+
+    public void removeFile(FileDto fileDto) throws DaoException {
+	try {
+	    this.getEntityManager().createQuery( //
+		    "delete from " + File.class.getSimpleName() + //
+			    " where id = :id"). //
+		    setParameter("id", fileDto.getId());
+	} catch (RuntimeException ex) {
+	    throw new DaoException(ex.getMessage(), ex);
 	}
     }
 
