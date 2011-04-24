@@ -32,10 +32,19 @@ public interface FsService extends RemoteService {
      * @param password
      *            a felhasználó jelszava
      * 
-     * @return
+     * @return aktuálisan regisztrált user
      * @throws ServiceException
      *             ha sikertelen a regisztráció
      */
     public UserDto register(String name, String email, String password) throws ServiceException;
+
+    /**
+     * User adatainak módosítása
+     * 
+     * @param user
+     * @return módosított user
+     * @throws ServiceException
+     */
+    public UserDto updateUser(UserDto user) throws ServiceException;
 
 }
