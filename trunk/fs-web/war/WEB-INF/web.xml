@@ -15,6 +15,17 @@
 		<servlet-name>fsServlet</servlet-name>
 		<url-pattern>/FsWeb/fs</url-pattern>
 	</servlet-mapping>
+	
+	<!-- File uploader -->
+	<servlet>
+		<servlet-name>uploaderServlet</servlet-name>
+		<servlet-class>hu.bme.vihijv37.bus1fj.web.server.uploader.FileUploaderServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>uploaderServlet</servlet-name>
+		<url-pattern>/FsWeb/fileUploader</url-pattern>
+	</servlet-mapping>
 
 	<!-- Default page to serve -->
 	<welcome-file-list>
