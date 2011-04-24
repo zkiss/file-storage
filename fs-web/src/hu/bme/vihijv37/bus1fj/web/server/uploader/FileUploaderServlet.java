@@ -45,7 +45,7 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	    return;
 	}
 
-	File destinationFile = new File(UploaderUtil.getUploaderDir().getAbsolutePath(), uploadItem.getName());
+	File destinationFile = new File(ServerProperties.getUploadDirectory(), uploadItem.getName());
 
 	try {
 	    if (destinationFile.createNewFile()) {
