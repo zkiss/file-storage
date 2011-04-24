@@ -7,6 +7,14 @@ import javax.persistence.Query;
 
 public abstract class AbstractDao {
 
+    public static <T> T getResult(Query query, Class<T> clazz) throws DaoException {
+	try {
+	    return (T) query.getSingleResult();
+	} catch (RuntimeException ex) {
+	    throw new DaoException("Could not get result", ex);
+	}
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> List<T> getResultList(Query query, Class<T> clazz) throws DaoException {
 	try {

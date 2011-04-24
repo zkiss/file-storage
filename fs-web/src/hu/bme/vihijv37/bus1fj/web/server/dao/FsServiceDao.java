@@ -5,11 +5,24 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
 public class FsServiceDao extends AbstractDao {
 
     public FsServiceDao(EntityManager entityManager) {
 	super(entityManager);
+    }
+
+    public User findUserById(long id) throws DaoException {
+	try {
+	    User user = AbstractDao.getResult(this.getEntityManager().createQuery(//
+		    "select u from " + User.class.getSimpleName() + " u" //
+			    + " where u.id = :id")//
+		    .setParameter("id", id), User.class);
+	    return user;
+	} catch (RuntimeException ex) {
+	    throw new DaoException(ex.getMessage(), ex);
+	}
     }
 
     /**
@@ -50,4 +63,18 @@ public class FsServiceDao extends AbstractDao {
 	}
     }
 
+    public User updateUser(UserDto userDto) throws DaoException {
+	try {
+	    User user = this.findUserById(userDto.getId());
+	    user.setEmail(userDto.getEmail());
+	    user.setName(userDto.getName());
+	    if (userDto.getPassword() != null) {
+		user.setPassword(userDto.getPassword());
+	    }
+	    this.getEntityManager().merge(user);
+	    return user;
+	} catch (RuntimeException ex) {
+	    throw new DaoException(ex.getMessage(), ex);
+	}
+    }
 }
