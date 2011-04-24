@@ -47,6 +47,10 @@ public class File extends EntityBase {
 	this.path = path;
     }
 
+    public void setUser(User user) {
+	this.user = user;
+    }
+
     @Override
     public String toString() {
 	return super.toString() + "[" + this.path + "]";
