@@ -2,12 +2,16 @@ package hu.bme.vihijv37.bus1fj.web.client.components;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -35,21 +39,26 @@ public class RegisterScreen extends VerticalPanel {
 	    @Override
 	    public void onClick(ClickEvent event) {
 		if (RegisterScreen.this.checkFields()) {
-		    GWTServiceUtil.getService().register(RegisterScreen.this.userNameTextBox.getSelectedText(),
-			    RegisterScreen.this.emailTextBox.getSelectedText(), RegisterScreen.this.passwordTextBox.getSelectedText(),
-			    new AsyncCallback<UserDto>() {
+		    GWTServiceUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), RegisterScreen.this.emailTextBox.getText(),
+			    RegisterScreen.this.passwordTextBox.getText(), new AsyncCallback<UserDto>() {
 				@Override
 				public void onFailure(Throwable caught) {
-				    caught.printStackTrace();
+				    MessageDialog.show("Error", caught.getMessage(), null);
 				};
 
 				@Override
 				public void onSuccess(UserDto result) {
 				    Session.getInstance().setCurrentUser(result);
+				    MessageDialog.show("Info", "Save succesfully!", new CloseHandler<PopupPanel>() {
+
+					@Override
+					public void onClose(CloseEvent<PopupPanel> event) {
+					    RootPanel.get("main").clear();
+					    RootPanel.get("main").add(new LoginScreen());
+					}
+				    });
 				};
 			    });
-		} else {
-		    MessageDialog.show("Message", "Please fill all field!", null);
 		}
 	    }
 	});
@@ -69,6 +78,14 @@ public class RegisterScreen extends VerticalPanel {
 	}
 	if ("".equals(this.emailTextBox.getText())) {
 	    ret = false;
+	}
+	if (!ret) {
+	    MessageDialog.show("Message", "Please fill all field!", null);
+	}
+
+	if (!this.passwordTextBox.getText().equals(this.reTypePasswordTextBox.getText())) {
+	    ret = false;
+	    MessageDialog.show("Message", "Passwords do not match!", null);
 	}
 	return ret;
     }

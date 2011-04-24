@@ -115,14 +115,12 @@ public class LoginScreen extends VerticalPanel {
 
     private void doLogin() {
 	if (LoginScreen.this.checkFields()) {
-	    GWTServiceUtil.getService().login(LoginScreen.this.userNameTextBox.getSelectedText(), LoginScreen.this.passwordTextBox.getSelectedText(),
+	    GWTServiceUtil.getService().login(LoginScreen.this.userNameTextBox.getText(), LoginScreen.this.passwordTextBox.getText(),
 		    new AsyncCallback<UserDto>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 			    MessageDialog.show("Error", "Incorrect password and/or username", null);
-			    RootPanel.get("main").clear();
-			    RootPanel.get("main").add(new WelcomePanel());
 			}
 
 			@Override
