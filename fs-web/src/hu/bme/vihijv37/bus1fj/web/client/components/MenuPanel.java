@@ -10,9 +10,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 import hu.bme.vihijv37.bus1fj.web.client.Session;
 
-public class WelcomeTopPanel extends Grid {
+public class MenuPanel extends Grid {
 
-    public WelcomeTopPanel() {
+    public MenuPanel() {
 	super(1, 4);
 	String currentUserName = Session.getInstance().getCurrentUser() == null ? "unknown" : Session.getInstance().getCurrentUser().getName();
 
