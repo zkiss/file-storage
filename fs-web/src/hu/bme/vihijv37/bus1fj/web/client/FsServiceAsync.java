@@ -16,4 +16,6 @@ public interface FsServiceAsync {
 
     void register(String name, String email, String password, AsyncCallback<UserDto> callback);
 
+    void updateUser(UserDto user, AsyncCallback<UserDto> callback);
+
 }
