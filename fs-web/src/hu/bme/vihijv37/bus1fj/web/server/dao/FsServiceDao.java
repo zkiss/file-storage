@@ -82,7 +82,7 @@ public class FsServiceDao extends AbstractDao {
 	    this.getEntityManager().createQuery( //
 		    "delete from " + File.class.getSimpleName() + //
 			    " where id = :id"). //
-		    setParameter("id", fileDto.getId());
+		    setParameter("id", fileDto.getId()).executeUpdate();
 	} catch (RuntimeException ex) {
 	    throw new DaoException(ex.getMessage(), ex);
 	}

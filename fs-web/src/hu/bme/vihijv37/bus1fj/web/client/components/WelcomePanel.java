@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -25,6 +26,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
 import hu.bme.vihijv37.bus1fj.web.client.GWTServiceUtil;
 import hu.bme.vihijv37.bus1fj.web.client.Session;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationCallback;
@@ -39,14 +41,14 @@ public class WelcomePanel extends VerticalPanel {
 
     private static final String SERVLET_URL = "FsWeb/fileUploader";
     private static final UserDto CURRENT_USER = Session.getInstance().getCurrentUser();
-    private static final String WIDTH = "196px";
+    private static final String WIDTH = "696px";
     private FlexTable contentTable;
     private Set<FileDto> fileList;
 
     public WelcomePanel() {
 	this.add(new MenuPanel());
 	this.contentTable = new FlexTable();
-	this.contentTable.setWidth("320px");
+	this.contentTable.setWidth("800px");
 	this.contentTable.setCellSpacing(0);
 	CaptionPanel captionPanel = new CaptionPanel("Manage files");
 	captionPanel.add(this.contentTable);
@@ -58,7 +60,7 @@ public class WelcomePanel extends VerticalPanel {
 	this.contentTable.removeAllRows();
 	int row = 0;
 	for (final FileDto file : this.fileList) {
-	    String url = "<a href=\"" + file.getPath() + "\">" + file.getPath() + "</a>";
+	    String url = "<a href=\"" + file.getPath() + "\">" + ClientUtil.getFileName(file.getPath()) + "</a>";
 	    HTML link = new HTML(url);
 	    link.setStyleName("link");
 	    this.contentTable.setWidget(row, 0, link);
@@ -83,7 +85,9 @@ public class WelcomePanel extends VerticalPanel {
 	    });
 	    this.contentTable.setWidget(row, 1, deleteBtn);
 	    this.contentTable.getCellFormatter().setWidth(row, 0, WelcomePanel.WIDTH);
-	    this.contentTable.getRowFormatter().setStyleName(row, "tableRow");
+	    this.contentTable.getCellFormatter().setStyleName(row, 0, "tableRow");
+	    this.contentTable.getCellFormatter().setStyleName(row, 1, "tableRow");
+	    this.contentTable.getCellFormatter().setHorizontalAlignment(row, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 	    row++;
 	}
 	final FormPanel formPanel = new FormPanel();
@@ -97,9 +101,10 @@ public class WelcomePanel extends VerticalPanel {
 	uploader.setName("uploadFormElement");
 
 	HorizontalPanel formInnerPanel = new HorizontalPanel();
+	formInnerPanel.getElement().getStyle().setPaddingTop(3, Unit.PX);
 	formInnerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 	formInnerPanel.add(uploader);
-	formInnerPanel.add(new Button("Upload new file", new ClickHandler() {
+	formInnerPanel.add(new Button("Upload&nbsp;new&nbsp;file", new ClickHandler() {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
@@ -159,13 +164,8 @@ public class WelcomePanel extends VerticalPanel {
 
 	    @Override
 	    public void onSuccess(Void result) {
-		MessageDialog.show("Info", "Remove succesfully!", new CloseHandler<PopupPanel>() {
-
-		    @Override
-		    public void onClose(CloseEvent<PopupPanel> event) {
-			WelcomePanel.this.loadUserFiles();
-		    }
-		});
+		WelcomePanel.this.loadUserFiles();
+		MessageDialog.show("Info", "Remove succesfully!", null);
 	    }
 	});
     }

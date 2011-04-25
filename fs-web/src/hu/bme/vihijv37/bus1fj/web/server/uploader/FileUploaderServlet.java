@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import hu.bme.vihijv37.bus1fj.web.server.JpaManager;
 import hu.bme.vihijv37.bus1fj.web.server.dao.DaoException;
 import hu.bme.vihijv37.bus1fj.web.server.dao.FsServiceDao;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
+import hu.bme.vihijv37.bus1fj.web.server.entity.User;
 import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
 import org.apache.commons.fileupload.FileItem;
@@ -45,30 +45,40 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	    return;
 	}
 
-	File destinationFile = new File(ServerProperties.getUploadDirectory(), uploadItem.getName());
-
+	File destinationFile = null;
 	try {
-	    if (destinationFile.createNewFile()) {
-		uploadItem.write(destinationFile);
-		String userId = request.getParameter("userId");
-		long userIdLong = Long.parseLong(userId);
-		this.inserFile(destinationFile.getPath(), userIdLong);
+	    String userId = request.getParameter("userId");
+	    long userIdLong = Long.parseLong(userId);
+	    User user = this.findUserById(userIdLong);
+	    if (user != null) {
+		File userDir = new File(ServerProperties.getUploadDirectory(), user.getEmail());
+		if (!userDir.exists()) {
+		    userDir.mkdirs();
+		}
+		destinationFile = new File(userDir.getPath(), uploadItem.getName());
+		if (destinationFile.createNewFile()) {
+		    uploadItem.write(destinationFile);
+		    this.inserFile(destinationFile.getPath(), userIdLong);
+		}
 	    }
-	} catch (NumberFormatException e) {
-	    destinationFile.delete();
-	    FileUploaderServlet.LOG.error(e.getMessage(), e);
-	} catch (ServiceException e) {
-	    destinationFile.delete();
-	    FileUploaderServlet.LOG.error(e.getMessage(), e);
 	} catch (Exception ex) {
-	    destinationFile.delete();
+	    if ((destinationFile != null) && destinationFile.exists()) {
+		destinationFile.delete();
+	    }
 	    FileUploaderServlet.LOG.error(ex.getMessage(), ex);
 	}
 
     }
 
-    private UserDto findUserById(long userId) throws ServiceException {
-	throw new UnsupportedOperationException();
+    private User findUserById(long userId) throws ServiceException {
+	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
+	EntityManager em = emf.createEntityManager();
+	try {
+	    return new FsServiceDao(em).findUserById(userId);
+	} catch (DaoException ex) {
+	    FileUploaderServlet.LOG.error(ex.getMessage(), ex);
+	    throw new ServiceException("Could not delete file from db");
+	}
     }
 
     private FileItem getFileItem(HttpServletRequest request) {
