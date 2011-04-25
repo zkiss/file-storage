@@ -12,7 +12,6 @@
 	<property name="dist" value="${ant}\dist" />
 
 	<property name="dir-lib" value="${trunk}\lib" />
-	<property name="dir-lib-common" value="${trunk}\lib-common" />
 	<property name="dir-common" value="${trunk}\fs-common" />
 	<property name="dir-schemagen" value="${trunk}\fs-schemagen" />
 	<property name="dir-web" value="${trunk}\fs-web" />
@@ -25,6 +24,12 @@
 		<filelist dir="${dir-lib}">
 			<file name="commons-logging.jar" />
 			<file name="ejb3-persistence.jar" />
+		</filelist>
+	</path>
+	
+	<path id="path-lib-web">
+		<filelist dir="${dir-lib}">
+			<file name="commons-fileupload-1.2.1.jar" />
 		</filelist>
 	</path>
 

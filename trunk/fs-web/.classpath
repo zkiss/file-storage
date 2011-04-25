@@ -6,6 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/fs-common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/lib-common"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/lib-web"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

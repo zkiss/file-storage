@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="build-all" default="deploy">
+<project name="build-all" default="dist">
 
 	<import file="common.xml" />
 
@@ -48,10 +48,6 @@
 		<ant dir="${dir-common}" target="dist" />
 		<ant dir="${dir-web}" target="dist" />
 		<ant dir="${dir-schemagen}" target="dist" />
-	</target>
-
-	<target name="deploy">
-		<!-- TODO -->
 	</target>
 
 </project>
