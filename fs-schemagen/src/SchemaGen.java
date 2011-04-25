@@ -2,6 +2,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import hu.bme.vihijv37.bus1fj.web.server.entity.User;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,6 +38,18 @@ public class SchemaGen {
     private void insertDefaultData() {
 	EntityManager em = this.entityManagerFactory.createEntityManager();
 	try {
+	    User adminUser = new User();
+	    adminUser.setEmail("admin@email.net");
+	    adminUser.setName("Adminisztrátor");
+	    adminUser.setPassword("root");
+
+	    em.getTransaction().begin();
+	    em.merge(adminUser);
+	    em.getTransaction().commit();
+	    System.out.println("A user was successfully created with the following credentials:\n" //
+		    + "Loginname (email): " + adminUser.getEmail() + "\n" //
+		    + "Username: " + adminUser.getName() + "\n" //
+		    + "Password: " + adminUser.getPassword());
 	    // TODO
 	    // User adminUser = new User();
 	    // adminUser.setDisplayName("Adminisztrátor");
