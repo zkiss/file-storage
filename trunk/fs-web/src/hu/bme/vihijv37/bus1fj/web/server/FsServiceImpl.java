@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 
     private static final long serialVersionUID = -8112597734192747655L;
-
     private static final Log LOG = LogFactory.getLog(FsServiceImpl.class);
 
     @Override
@@ -71,21 +70,27 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
 	EntityManager em = emf.createEntityManager();
 	EntityTransaction transaction = em.getTransaction();
-	User user;
 	try {
-	    transaction.begin();
 	    // TODO pass hash
-	    user = new FsServiceDao(em).insertUser(name, email, password);
+	    FsServiceDao dao = new FsServiceDao(em);
+	    User user = new User();
+	    user.setEmail(email);
+	    user.setName(name);
+	    user.setPassword(password);
+	    transaction.begin();
+	    user = dao.insertUser(user);
 	    transaction.commit();
 	    return Converter.convert(user);
 	} catch (DaoException ex) {
 	    FsServiceImpl.LOG.error(ex.getMessage(), ex);
-	    transaction.rollback();
-	    throw new ServiceException("Could not insert user to db");
+	    throw new ServiceException("An internal server error occured");
 	} catch (ConverterException e) {
 	    FsServiceImpl.LOG.error(e.getMessage(), e);
-	    transaction.rollback();
-	    throw new ServiceException("Could not convert Entity to DTO");
+	    throw new ServiceException("An internal server error occured");
+	} finally {
+	    if (transaction.isActive()) {
+		transaction.rollback();
+	    }
 	}
     }
 
@@ -96,13 +101,19 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	EntityTransaction transaction = em.getTransaction();
 	try {
 	    transaction.begin();
-	    new FsServiceDao(em).removeFile(file);
-	    new File(file.getPath()).delete();
+	    new FsServiceDao(em).removeFile(file.getId());
+	    File uploadedFile = new File(file.getPath());
+	    if (uploadedFile.isFile() && !uploadedFile.delete()) {
+		throw new ServiceException("Could not delete file");
+	    }
 	    transaction.commit();
-	} catch (DaoException ex) {
-	    FsServiceImpl.LOG.error(ex.getMessage(), ex);
-	    transaction.rollback();
-	    throw new ServiceException("Could not remove file from db");
+	} catch (DaoException e) {
+	    FsServiceImpl.LOG.error(e.getMessage(), e);
+	    throw new ServiceException("Could not remove file");
+	} finally {
+	    if (transaction.isActive()) {
+		transaction.rollback();
+	    }
 	}
     }
 
@@ -111,21 +122,22 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
 	EntityManager em = emf.createEntityManager();
 	EntityTransaction transaction = em.getTransaction();
-	User user;
 	try {
 	    transaction.begin();
 	    // TODO pass hash
-	    user = new FsServiceDao(em).updateUser(userDto);
+	    User user = new FsServiceDao(em).updateUser(userDto.getId(), userDto.getEmail(), userDto.getName(), userDto.getPassword());
 	    transaction.commit();
 	    return Converter.convert(user);
-	} catch (DaoException ex) {
-	    FsServiceImpl.LOG.error(ex.getMessage(), ex);
-	    transaction.rollback();
-	    throw new ServiceException("Could not insert user to db");
+	} catch (DaoException e) {
+	    FsServiceImpl.LOG.error(e.getMessage(), e);
+	    throw new ServiceException("An internal server error occured");
 	} catch (ConverterException e) {
 	    FsServiceImpl.LOG.error(e.getMessage(), e);
-	    transaction.rollback();
-	    throw new ServiceException("Could not convert Entity to DTO");
+	    throw new ServiceException("An internal server error occured");
+	} finally {
+	    if (transaction.isActive()) {
+		transaction.rollback();
+	    }
 	}
     }
 }

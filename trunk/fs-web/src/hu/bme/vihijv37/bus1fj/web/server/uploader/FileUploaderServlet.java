@@ -102,7 +102,11 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	EntityTransaction transaction = em.getTransaction();
 	try {
 	    transaction.begin();
-	    new FsServiceDao(em).insertFile(path, userId);
+	    hu.bme.vihijv37.bus1fj.web.server.entity.File file = new hu.bme.vihijv37.bus1fj.web.server.entity.File();
+	    FsServiceDao dao = new FsServiceDao(em);
+	    file.setPath(path);
+	    file.setUser(dao.findUserById(userId));
+	    dao.insertFile(file);
 	    transaction.commit();
 	} catch (DaoException ex) {
 	    transaction.rollback();

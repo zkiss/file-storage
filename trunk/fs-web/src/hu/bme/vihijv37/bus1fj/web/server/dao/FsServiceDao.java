@@ -6,8 +6,6 @@ import javax.persistence.EntityManager;
 
 import hu.bme.vihijv37.bus1fj.web.server.entity.File;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
 public class FsServiceDao extends AbstractDao {
 
@@ -15,15 +13,22 @@ public class FsServiceDao extends AbstractDao {
 	super(entityManager);
     }
 
+    /**
+     * Felhasználó keresése ID alapján
+     * 
+     * @param id
+     * @return
+     * @throws DaoException
+     */
     public User findUserById(long id) throws DaoException {
 	try {
-	    User user = AbstractDao.getResult(this.getEntityManager().createQuery(//
-		    "select u from " + User.class.getSimpleName() + " u" //
-			    + " where u.id = :id")//
-		    .setParameter("id", id), User.class);
+	    User user = (User) this.getEntityManager().createQuery( //
+		    "select u from " + User.class.getSimpleName() + " u" + //
+			    " where u.id = :id"). //
+		    setParameter("id", id).getSingleResult();
 	    return user;
 	} catch (RuntimeException ex) {
-	    throw new DaoException(ex.getMessage(), ex);
+	    throw new DaoException("Could not find User by id", ex);
 	}
     }
 
@@ -48,58 +53,70 @@ public class FsServiceDao extends AbstractDao {
 		    setParameter("pwHash", passwordHash), User.class);
 	    return users.size() == 1 ? users.get(0) : null;
 	} catch (RuntimeException e) {
-	    throw new DaoException(e.getMessage(), e);
+	    throw new DaoException("Could not get User by email and password", e);
 	}
     }
 
-    public void insertFile(String path, long userId) throws DaoException {
+    /**
+     * Új {@link File} mentése
+     * 
+     * @param file
+     * @throws DaoException
+     */
+    public File insertFile(File file) throws DaoException {
 	try {
-	    File file = new File();
-	    User user = this.findUserById(userId);
-	    file.setPath(path);
-	    file.setUser(user);
 	    this.getEntityManager().persist(file);
-	} catch (RuntimeException ex) {
-	    throw new DaoException(ex.getMessage(), ex);
+	    return file;
+	} catch (RuntimeException e) {
+	    throw new DaoException("Could not persist " + file, e);
 	}
     }
 
-    public User insertUser(String name, String email, String password) throws DaoException {
+    /**
+     * Új {@link User} mentése
+     * 
+     * @param user
+     * @return
+     * @throws DaoException
+     */
+    public User insertUser(User user) throws DaoException {
 	try {
-	    User user = new User();
-	    user.setEmail(email);
-	    user.setName(name);
-	    user.setPassword(password);
 	    this.getEntityManager().persist(user);
 	    return user;
 	} catch (RuntimeException e) {
-	    throw new DaoException(e.getMessage(), e);
+	    throw new DaoException("Could not persist " + user, e);
 	}
     }
 
-    public void removeFile(FileDto fileDto) throws DaoException {
+    /**
+     * {@link File} rekord törlése
+     * 
+     * @param fileId
+     *            a File azonosítója
+     * @throws DaoException
+     */
+    public void removeFile(long fileId) throws DaoException {
 	try {
 	    this.getEntityManager().createQuery( //
 		    "delete from " + File.class.getSimpleName() + //
 			    " where id = :id"). //
-		    setParameter("id", fileDto.getId()).executeUpdate();
-	} catch (RuntimeException ex) {
-	    throw new DaoException(ex.getMessage(), ex);
+		    setParameter("id", fileId).executeUpdate();
+	} catch (RuntimeException e) {
+	    throw new DaoException("Could not delete File #" + fileId, e);
 	}
     }
 
-    public User updateUser(UserDto userDto) throws DaoException {
+    public User updateUser(long userId, String email, String name, String newPasswordHash) throws DaoException {
 	try {
-	    User user = this.findUserById(userDto.getId());
-	    user.setEmail(userDto.getEmail());
-	    user.setName(userDto.getName());
-	    if (userDto.getPassword() != null) {
-		user.setPassword(userDto.getPassword());
+	    User user = this.findUserById(userId);
+	    user.setEmail(email);
+	    user.setName(name);
+	    if (newPasswordHash != null) {
+		user.setPassword(newPasswordHash);
 	    }
-	    this.getEntityManager().merge(user);
-	    return user;
-	} catch (RuntimeException ex) {
-	    throw new DaoException(ex.getMessage(), ex);
+	    return this.getEntityManager().merge(user);
+	} catch (RuntimeException e) {
+	    throw new DaoException("Could not update User #" + userId, e);
 	}
     }
 }
