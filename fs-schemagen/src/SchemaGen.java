@@ -36,18 +36,18 @@ public class SchemaGen {
     private void insertDefaultData() {
 	EntityManager em = this.entityManagerFactory.createEntityManager();
 	try {
-	    User adminUser = new User();
-	    adminUser.setEmail(SchemaGen.DEFAULT_USER_MAIL);
-	    adminUser.setName(SchemaGen.DEFAULT_USER_NAME);
-	    adminUser.setPassword(SchemaGen.DEFAULT_USER_PASSWORD);
+	    User user = new User();
+	    user.setEmail(SchemaGen.DEFAULT_USER_MAIL);
+	    user.setName(SchemaGen.DEFAULT_USER_NAME);
+	    user.setPassword(SchemaGen.DEFAULT_USER_PASSWORD);
 
 	    em.getTransaction().begin();
-	    em.merge(adminUser);
+	    em.persist(user);
 	    em.getTransaction().commit();
 	    System.out.println("A user was successfully created with the following credentials:\n" //
-		    + "Loginname (email): " + adminUser.getEmail() + "\n" //
-		    + "Username: " + adminUser.getName() + "\n" //
-		    + "Password: " + adminUser.getPassword());
+		    + "Loginname (email): " + user.getEmail() + "\n" //
+		    + "Username: " + user.getName() + "\n" //
+		    + "Password: " + user.getPassword());
 	} finally {
 	    if (em.getTransaction().isActive()) {
 		em.getTransaction().rollback();
