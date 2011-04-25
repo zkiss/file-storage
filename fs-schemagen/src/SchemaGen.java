@@ -9,13 +9,11 @@ import org.apache.commons.logging.LogFactory;
 
 public class SchemaGen {
 
-    private static final String PERSISTENCE_UNIT_NAME = "FILESERVICE";
-
     private static final Log LOG = LogFactory.getLog(SchemaGen.class);
-
-    private static final String DEFAULT_PASSWORD = "adminadmin";
-
-    private static final String DEFAULT_USER = "admin";
+    private static final String PERSISTENCE_UNIT_NAME = "FILESERVICE";
+    private static final String DEFAULT_USER_PASSWORD = "asd";
+    private static final String DEFAULT_USER_NAME = "Zoli";
+    private static final String DEFAULT_USER_MAIL = "zoltan.kiss.jr@gmail.com";
 
     public static void main(String[] args) {
 	try {
@@ -39,9 +37,9 @@ public class SchemaGen {
 	EntityManager em = this.entityManagerFactory.createEntityManager();
 	try {
 	    User adminUser = new User();
-	    adminUser.setEmail("admin@email.net");
-	    adminUser.setName("Adminisztrátor");
-	    adminUser.setPassword("root");
+	    adminUser.setEmail(SchemaGen.DEFAULT_USER_MAIL);
+	    adminUser.setName(SchemaGen.DEFAULT_USER_NAME);
+	    adminUser.setPassword(SchemaGen.DEFAULT_USER_PASSWORD);
 
 	    em.getTransaction().begin();
 	    em.merge(adminUser);
@@ -50,21 +48,6 @@ public class SchemaGen {
 		    + "Loginname (email): " + adminUser.getEmail() + "\n" //
 		    + "Username: " + adminUser.getName() + "\n" //
 		    + "Password: " + adminUser.getPassword());
-	    // TODO
-	    // User adminUser = new User();
-	    // adminUser.setDisplayName("Adminisztrátor");
-	    // adminUser.setLoginName(SchemaGen.DEFAULT_USER);
-	    // adminUser.setPassword(Util.md5Hash(SchemaGen.DEFAULT_PASSWORD));
-	    // adminUser.setRole(Role.ADMIN);
-	    //
-	    // em.getTransaction().begin();
-	    // em.merge(adminUser);
-	    // em.getTransaction().commit();
-	    // System.out.println("A user with administrator privileges was successfully created with the following credentials:\n"
-	    // + //
-	    // "loginname: \"" + SchemaGen.DEFAULT_USER + "\"\n" + //
-	    // "password: \"" + SchemaGen.DEFAULT_PASSWORD + "\"\n" + //
-	    // "Please note that quotation marks are to be ignored!");
 	} finally {
 	    if (em.getTransaction().isActive()) {
 		em.getTransaction().rollback();
