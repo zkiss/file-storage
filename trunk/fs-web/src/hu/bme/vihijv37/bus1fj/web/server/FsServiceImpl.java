@@ -1,5 +1,6 @@
 package hu.bme.vihijv37.bus1fj.web.server;
 
+import java.io.File;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -96,6 +97,7 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	try {
 	    transaction.begin();
 	    new FsServiceDao(em).removeFile(file);
+	    new File(file.getPath()).delete();
 	    transaction.commit();
 	} catch (DaoException ex) {
 	    FsServiceImpl.LOG.error(ex.getMessage(), ex);

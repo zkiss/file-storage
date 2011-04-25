@@ -1,4 +1,12 @@
 /** Add css rules here for your application. */
+html, body {
+	background-color: lightgrey;
+}
+
+body {
+	background: lightgrey;	
+}
+
 #page {
 	width: 880px;
 	margin: auto;
@@ -28,5 +36,5 @@
 
 .tableRow {
 	border: none;
-	border-bottom: dotted 1px gray;		
+	border-bottom: dotted 1px gray;
 }
