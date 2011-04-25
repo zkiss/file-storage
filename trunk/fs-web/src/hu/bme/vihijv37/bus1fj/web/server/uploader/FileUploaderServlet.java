@@ -30,10 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class FileUploaderServlet extends HttpServlet implements Servlet {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 4157585117575772801L;
     private static final Log LOG = LogFactory.getLog(FileUploaderServlet.class);
 
     @Override
