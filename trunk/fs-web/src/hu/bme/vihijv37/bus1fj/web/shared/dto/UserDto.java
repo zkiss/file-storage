@@ -13,14 +13,10 @@ public class UserDto extends EntityBaseDto {
 
     private String name;
 
-    private Set<FileDto> files = new HashSet<FileDto>();
+    private Set<UploadDto> uploads = new HashSet<UploadDto>();
 
     public String getEmail() {
 	return this.email;
-    }
-
-    public Set<FileDto> getFiles() {
-	return this.files;
     }
 
     public String getName() {
@@ -29,6 +25,10 @@ public class UserDto extends EntityBaseDto {
 
     public String getPassword() {
 	return this.password;
+    }
+
+    public Set<UploadDto> getUploads() {
+	return this.uploads;
     }
 
     public void setEmail(String email) {

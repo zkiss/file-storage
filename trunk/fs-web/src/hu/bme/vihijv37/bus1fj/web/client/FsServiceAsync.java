@@ -1,15 +1,20 @@
 package hu.bme.vihijv37.bus1fj.web.client;
 
-import java.util.Set;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
 public interface FsServiceAsync {
 
-    void getUserFiles(UserDto user, AsyncCallback<Set<FileDto>> callback);
+    /**
+     * @param userId
+     * @param callback
+     * @see FsService#getUserUploads(long)
+     */
+    void getUserUploads(long userId, AsyncCallback<List<UploadDto>> callback);
 
     /**
      * @param userName
@@ -19,10 +24,27 @@ public interface FsServiceAsync {
      */
     void login(String userName, String password, AsyncCallback<UserDto> callback);
 
+    /**
+     * @param name
+     * @param email
+     * @param password
+     * @param callback
+     * @see FsService#register(String, String, String)
+     */
     void register(String name, String email, String password, AsyncCallback<UserDto> callback);
 
-    void removeFile(FileDto file, AsyncCallback<Void> callback);
+    /**
+     * @param fileId
+     * @param callback
+     * @see FsService#removeFile(long)
+     */
+    void removeFile(long fileId, AsyncCallback<Void> callback);
 
+    /**
+     * @param user
+     * @param callback
+     * @see FsService#updateUser(UserDto)
+     */
     void updateUser(UserDto user, AsyncCallback<UserDto> callback);
 
 }

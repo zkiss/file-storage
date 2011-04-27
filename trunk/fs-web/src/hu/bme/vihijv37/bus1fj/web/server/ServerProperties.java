@@ -1,4 +1,4 @@
-package hu.bme.vihijv37.bus1fj.web.server.uploader;
+package hu.bme.vihijv37.bus1fj.web.server;
 
 import java.io.File;
 import java.io.IOException;

@@ -14,8 +14,8 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import hu.bme.vihijv37.bus1fj.web.client.GWTServiceUtil;
-import hu.bme.vihijv37.bus1fj.web.client.Session;
+import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
+import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
@@ -26,7 +26,7 @@ public class UserSettingsPanel extends VerticalPanel {
     private TextBox userNameTb;
     private PasswordTextBox passTb;
     private PasswordTextBox passReTb;
-    private UserDto currentUser = Session.getInstance().getCurrentUser();
+    private UserDto currentUser = ClientSession.getInstance().getCurrentUser();
 
     public UserSettingsPanel() {
 	this.add(new MenuPanel());
@@ -115,7 +115,7 @@ public class UserSettingsPanel extends VerticalPanel {
     private void doSave() {
 	if (UserSettingsPanel.this.checkFields()) {
 	    this.setFields();
-	    GWTServiceUtil.getService().updateUser(this.currentUser, new AsyncCallback<UserDto>() {
+	    ClientUtil.getService().updateUser(this.currentUser, new AsyncCallback<UserDto>() {
 
 		@Override
 		public void onFailure(Throwable caught) {
@@ -124,7 +124,7 @@ public class UserSettingsPanel extends VerticalPanel {
 
 		@Override
 		public void onSuccess(UserDto result) {
-		    Session.getInstance().setCurrentUser(result);
+		    ClientSession.getInstance().setCurrentUser(result);
 		    MessageDialog.show("Info", "Save settings successfully!", null);
 		}
 	    });

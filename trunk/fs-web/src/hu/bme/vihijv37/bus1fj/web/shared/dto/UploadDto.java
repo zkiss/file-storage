@@ -1,6 +1,6 @@
 package hu.bme.vihijv37.bus1fj.web.shared.dto;
 
-public class FileDto extends EntityBaseDto {
+public class UploadDto extends EntityBaseDto {
 
     private static final long serialVersionUID = -6875800091975550956L;
 
@@ -26,7 +26,7 @@ public class FileDto extends EntityBaseDto {
 
     @Override
     public String toString() {
-	return super.toString("File") + "[" + this.path + "]";
+	return super.toString("Upload") + "[" + this.path + "]";
     }
 
 }

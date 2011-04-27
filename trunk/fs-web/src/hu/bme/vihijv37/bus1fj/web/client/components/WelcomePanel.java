@@ -1,9 +1,8 @@
 package hu.bme.vihijv37.bus1fj.web.client.components;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
@@ -26,24 +25,21 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
-import hu.bme.vihijv37.bus1fj.web.client.GWTServiceUtil;
-import hu.bme.vihijv37.bus1fj.web.client.Session;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationCallback;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.ConfirmOption;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.Option;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
 
 public class WelcomePanel extends VerticalPanel {
 
     private static final String SERVLET_URL = "FsWeb/fileUploader";
-    private static final UserDto CURRENT_USER = Session.getInstance().getCurrentUser();
     private static final String WIDTH = "696px";
     private FlexTable contentTable;
-    private Set<FileDto> fileList;
+    private List<UploadDto> fileList;
 
     public WelcomePanel() {
 	this.add(new MenuPanel());
@@ -59,7 +55,7 @@ public class WelcomePanel extends VerticalPanel {
     private void createGui() {
 	this.contentTable.removeAllRows();
 	int row = 0;
-	for (final FileDto file : this.fileList) {
+	for (final UploadDto file : this.fileList) {
 	    String url = "<a href=\"" + file.getPath() + "\">" + ClientUtil.getFileName(file.getPath()) + "</a>";
 	    HTML link = new HTML(url);
 	    link.setStyleName("link");
@@ -95,7 +91,7 @@ public class WelcomePanel extends VerticalPanel {
 	formPanel.setMethod(FormPanel.METHOD_POST);
 
 	String action = GWT.getHostPageBaseURL() + WelcomePanel.SERVLET_URL;
-	formPanel.setAction(action + "?userId=" + Session.getInstance().getCurrentUser().getId());
+	formPanel.setAction(action + "?userId=" + ClientSession.getInstance().getCurrentUser().getId());
 
 	final FileUpload uploader = new FileUpload();
 	uploader.setName("uploadFormElement");
@@ -136,7 +132,7 @@ public class WelcomePanel extends VerticalPanel {
     }
 
     private void loadUserFiles() {
-	GWTServiceUtil.getService().getUserFiles(WelcomePanel.CURRENT_USER, new AsyncCallback<Set<FileDto>>() {
+	ClientUtil.getService().getUserUploads(ClientSession.getInstance().getCurrentUser().getId(), new AsyncCallback<List<UploadDto>>() {
 
 	    @Override
 	    public void onFailure(Throwable caught) {
@@ -144,18 +140,18 @@ public class WelcomePanel extends VerticalPanel {
 	    }
 
 	    @Override
-	    public void onSuccess(Set<FileDto> result) {
+	    public void onSuccess(List<UploadDto> result) {
 		WelcomePanel.this.fileList = result;
 		if (WelcomePanel.this.fileList == null) {
-		    WelcomePanel.this.fileList = new LinkedHashSet<FileDto>();
+		    WelcomePanel.this.fileList = new ArrayList<UploadDto>(0);
 		}
 		WelcomePanel.this.createGui();
 	    }
 	});
     }
 
-    private void removeFile(final FileDto file) {
-	GWTServiceUtil.getService().removeFile(file, new AsyncCallback<Void>() {
+    private void removeFile(final UploadDto file) {
+	ClientUtil.getService().removeFile(file.getId(), new AsyncCallback<Void>() {
 
 	    @Override
 	    public void onFailure(Throwable caught) {

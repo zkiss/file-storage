@@ -1,10 +1,10 @@
 package hu.bme.vihijv37.bus1fj.web.server;
 
 import java.io.File;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -14,8 +14,9 @@ import hu.bme.vihijv37.bus1fj.web.server.converter.Converter;
 import hu.bme.vihijv37.bus1fj.web.server.converter.ConverterException;
 import hu.bme.vihijv37.bus1fj.web.server.dao.DaoException;
 import hu.bme.vihijv37.bus1fj.web.server.dao.FsServiceDao;
+import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
@@ -28,58 +29,63 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
     private static final Log LOG = LogFactory.getLog(FsServiceImpl.class);
 
     @Override
-    public Set<FileDto> getUserFiles(UserDto userDto) throws ServiceException {
-	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
-	User user;
+    public List<UploadDto> getUserUploads(long userId) throws ServiceException {
+	EntityManager em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
 	try {
-	    user = new FsServiceDao(emf.createEntityManager()).findUserById(userDto.getId());
-	    user.getFiles().size();
-	    UserDto convertedUser = Converter.convert(user);
-	    return convertedUser.getFiles();
+	    List<Upload> userUploads = new FsServiceDao(em).getUserUploads(userId);
+	    List<UploadDto> ret = new ArrayList<UploadDto>(userUploads.size());
+	    for (Upload upload : userUploads) {
+		ret.add(Converter.<UploadDto> convert(upload));
+	    }
+	    return ret;
 	} catch (DaoException e) {
-	    FsServiceImpl.LOG.error(e.getMessage(), e);
-	    throw new ServiceException("Could not execute database query");
+	    FsServiceImpl.LOG.error("Could not get user uploads", e);
+	    throw new ServiceException("An internal server error occured");
 	} catch (ConverterException e) {
-	    FsServiceImpl.LOG.error(e.getMessage(), e);
-	    throw new ServiceException("Could not convert Entity to DTO");
+	    FsServiceImpl.LOG.error("Could not convert Entity to DTO", e);
+	    throw new ServiceException("An internal server error occured");
+	} finally {
+	    em.close();
 	}
-
     }
 
     @Override
     public UserDto login(String userName, String password) throws ServiceException {
-	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
+	EntityManager em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
 	User user;
 	try {
-	    user = new FsServiceDao(emf.createEntityManager()).getUser(userName, password);
+	    user = new FsServiceDao(em).getUser(userName, password);
 	    if (user == null) {
 		throw new ServiceException("No such user");
 	    }
+	    FsServiceImpl.LOG.info("User logged in: " + user);
 	    return Converter.convert(user);
 	} catch (DaoException e) {
-	    FsServiceImpl.LOG.error(e.getMessage(), e);
-	    throw new ServiceException("Could not execute database query");
+	    FsServiceImpl.LOG.error("Could not execute query", e);
+	    throw new ServiceException("An internal server error occured");
 	} catch (ConverterException e) {
-	    FsServiceImpl.LOG.error(e.getMessage(), e);
-	    throw new ServiceException("Could not convert Entity to DTO");
+	    FsServiceImpl.LOG.error("Could not convert Entity to DTO", e);
+	    throw new ServiceException("An internal server error occured");
+	} finally {
+	    em.close();
 	}
     }
 
     @Override
     public UserDto register(String name, String email, String password) throws ServiceException {
-	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
-	EntityManager em = emf.createEntityManager();
+	EntityManager em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
 	EntityTransaction transaction = em.getTransaction();
 	try {
-	    // TODO pass hash
 	    FsServiceDao dao = new FsServiceDao(em);
 	    User user = new User();
 	    user.setEmail(email);
 	    user.setName(name);
-	    user.setPassword(password);
+	    user.setPassword(ServerUtils.hashPassword(password));
+
 	    transaction.begin();
-	    user = dao.insertUser(user);
+	    user = dao.insert(user);
 	    transaction.commit();
+	    FsServiceImpl.LOG.info("User registered: " + user);
 	    return Converter.convert(user);
 	} catch (DaoException ex) {
 	    FsServiceImpl.LOG.error(ex.getMessage(), ex);
@@ -91,53 +97,70 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	    if (transaction.isActive()) {
 		transaction.rollback();
 	    }
+	    em.close();
 	}
     }
 
     @Override
-    public void removeFile(FileDto file) throws ServiceException {
-	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
-	EntityManager em = emf.createEntityManager();
+    public void removeFile(long uploadId) throws ServiceException {
+	EntityManager em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
 	EntityTransaction transaction = em.getTransaction();
 	try {
+	    FsServiceDao dao = new FsServiceDao(em);
+	    hu.bme.vihijv37.bus1fj.web.server.entity.Upload upload = dao.get(Upload.class, uploadId);
 	    transaction.begin();
-	    new FsServiceDao(em).removeFile(file.getId());
-	    File uploadedFile = new File(file.getPath());
+	    dao.delete(Upload.class, uploadId);
+	    File uploadedFile = ServerUtils.getUploadFile(upload.getUser(), upload.getPath());
 	    if (uploadedFile.isFile() && !uploadedFile.delete()) {
 		throw new ServiceException("Could not delete file");
 	    }
 	    transaction.commit();
+	    FsServiceImpl.LOG.info(upload + " deleted");
 	} catch (DaoException e) {
-	    FsServiceImpl.LOG.error(e.getMessage(), e);
+	    FsServiceImpl.LOG.error("Could not remove Upload #" + uploadId, e);
 	    throw new ServiceException("Could not remove file");
 	} finally {
 	    if (transaction.isActive()) {
 		transaction.rollback();
 	    }
+	    em.close();
 	}
     }
 
     @Override
     public UserDto updateUser(UserDto userDto) throws ServiceException {
-	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
-	EntityManager em = emf.createEntityManager();
+	EntityManager em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
 	EntityTransaction transaction = em.getTransaction();
 	try {
+	    FsServiceDao dao = new FsServiceDao(em);
+	    User user = Converter.convert(userDto);
+	    if (user.getPassword() == null) {
+		User userInDb = dao.get(User.class, userDto.getId());
+		user.setPassword(userInDb.getPassword());
+	    } else {
+		/*
+		 * DTO-ból jövő jelszó még nincsen hash-elve
+		 */
+		user.setPassword(ServerUtils.hashPassword(user.getPassword()));
+	    }
+
 	    transaction.begin();
-	    // TODO pass hash
-	    User user = new FsServiceDao(em).updateUser(userDto.getId(), userDto.getEmail(), userDto.getName(), userDto.getPassword());
+	    user = dao.update(user);
 	    transaction.commit();
+	    FsServiceImpl.LOG.info("User data saved: " + userDto);
 	    return Converter.convert(user);
 	} catch (DaoException e) {
-	    FsServiceImpl.LOG.error(e.getMessage(), e);
+	    FsServiceImpl.LOG.error("Could not save " + userDto, e);
 	    throw new ServiceException("An internal server error occured");
 	} catch (ConverterException e) {
-	    FsServiceImpl.LOG.error(e.getMessage(), e);
+	    FsServiceImpl.LOG.error("Could not convert " + userDto, e);
 	    throw new ServiceException("An internal server error occured");
 	} finally {
 	    if (transaction.isActive()) {
 		transaction.rollback();
 	    }
+	    em.close();
 	}
     }
+
 }

@@ -15,7 +15,7 @@ import javax.persistence.Table;
  * @author Zoltan Kiss
  */
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User extends EntityBase {
 
     private static final long serialVersionUID = 817120011473348758L;
@@ -30,7 +30,7 @@ public class User extends EntityBase {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<File> files = new HashSet<File>();
+    private Set<Upload> uploads = new HashSet<Upload>();
 
     /**
      * A felhasználó e-mail címe
@@ -39,15 +39,6 @@ public class User extends EntityBase {
      */
     public String getEmail() {
 	return this.email;
-    }
-
-    /**
-     * A felhasználó által feltöltött fájlok
-     * 
-     * @return
-     */
-    public Set<File> getFiles() {
-	return this.files;
     }
 
     /**
@@ -66,6 +57,15 @@ public class User extends EntityBase {
      */
     public String getPassword() {
 	return this.password;
+    }
+
+    /**
+     * A felhasználó által feltöltött fájlok
+     * 
+     * @return
+     */
+    public Set<Upload> getUploads() {
+	return this.uploads;
     }
 
     public void setEmail(String email) {

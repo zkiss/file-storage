@@ -1,11 +1,11 @@
 package hu.bme.vihijv37.bus1fj.web.client;
 
-import java.util.Set;
+import java.util.List;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-import hu.bme.vihijv37.bus1fj.web.shared.dto.FileDto;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
@@ -15,11 +15,11 @@ public interface FsService extends RemoteService {
     /**
      * Visszaadja az összes file-t, melyet az adott user feltöltött
      * 
-     * @param user
+     * @param userId
      * @return
      * @throws ServiceException
      */
-    public Set<FileDto> getUserFiles(UserDto user) throws ServiceException;
+    public List<UploadDto> getUserUploads(long userId) throws ServiceException;
 
     /**
      * Bejelentkezés.
@@ -53,10 +53,10 @@ public interface FsService extends RemoteService {
     /**
      * A megadott file eltávolítása az adatbázisból
      * 
-     * @param file
+     * @param fileId
      * @throws ServiceException
      */
-    public void removeFile(FileDto file) throws ServiceException;
+    public void removeFile(long fileId) throws ServiceException;
 
     /**
      * User adatainak módosítása
@@ -66,4 +66,5 @@ public interface FsService extends RemoteService {
      * @throws ServiceException
      */
     public UserDto updateUser(UserDto user) throws ServiceException;
+
 }

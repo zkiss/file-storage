@@ -7,7 +7,7 @@
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<class>hu.bme.vihijv37.bus1fj.web.server.entity.User</class>
-		<class>hu.bme.vihijv37.bus1fj.web.server.entity.File</class>
+		<class>hu.bme.vihijv37.bus1fj.web.server.entity.Upload</class>
 
 		<properties>
 			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />

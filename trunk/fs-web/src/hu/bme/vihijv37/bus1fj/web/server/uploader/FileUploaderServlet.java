@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import hu.bme.vihijv37.bus1fj.web.server.JpaManager;
+import hu.bme.vihijv37.bus1fj.web.server.ServerProperties;
 import hu.bme.vihijv37.bus1fj.web.server.dao.DaoException;
 import hu.bme.vihijv37.bus1fj.web.server.dao.FsServiceDao;
+import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
 import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
@@ -71,10 +73,12 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
 	EntityManager em = emf.createEntityManager();
 	try {
-	    return new FsServiceDao(em).findUserById(userId);
+	    return new FsServiceDao(em).get(User.class, userId);
 	} catch (DaoException ex) {
 	    FileUploaderServlet.LOG.error(ex.getMessage(), ex);
 	    throw new ServiceException("Could not delete file from db");
+	} finally {
+	    em.close();
 	}
     }
 
@@ -102,16 +106,20 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	EntityTransaction transaction = em.getTransaction();
 	try {
 	    transaction.begin();
-	    hu.bme.vihijv37.bus1fj.web.server.entity.File file = new hu.bme.vihijv37.bus1fj.web.server.entity.File();
+	    Upload file = new Upload();
 	    FsServiceDao dao = new FsServiceDao(em);
 	    file.setPath(path);
-	    file.setUser(dao.findUserById(userId));
-	    dao.insertFile(file);
+	    file.setUser(dao.get(User.class, userId));
+	    dao.insert(file);
 	    transaction.commit();
-	} catch (DaoException ex) {
-	    transaction.rollback();
-	    FileUploaderServlet.LOG.error(ex.getMessage(), ex);
+	} catch (DaoException e) {
+	    FileUploaderServlet.LOG.error(e.getMessage(), e);
 	    throw new ServiceException("Could not delete file from db");
+	} finally {
+	    if (transaction.isActive()) {
+		transaction.rollback();
+	    }
+	    em.close();
 	}
     }
 }

@@ -15,8 +15,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import hu.bme.vihijv37.bus1fj.web.client.GWTServiceUtil;
-import hu.bme.vihijv37.bus1fj.web.client.Session;
+import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
+import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
@@ -39,7 +39,7 @@ public class RegisterScreen extends VerticalPanel {
 	    @Override
 	    public void onClick(ClickEvent event) {
 		if (RegisterScreen.this.checkFields()) {
-		    GWTServiceUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), RegisterScreen.this.emailTextBox.getText(),
+		    ClientUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), RegisterScreen.this.emailTextBox.getText(),
 			    RegisterScreen.this.passwordTextBox.getText(), new AsyncCallback<UserDto>() {
 				@Override
 				public void onFailure(Throwable caught) {
@@ -48,7 +48,7 @@ public class RegisterScreen extends VerticalPanel {
 
 				@Override
 				public void onSuccess(UserDto result) {
-				    Session.getInstance().setCurrentUser(result);
+				    ClientSession.getInstance().setCurrentUser(result);
 				    MessageDialog.show("Info", "Save succesfully!", new CloseHandler<PopupPanel>() {
 
 					@Override
