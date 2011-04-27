@@ -18,8 +18,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import hu.bme.vihijv37.bus1fj.web.client.GWTServiceUtil;
-import hu.bme.vihijv37.bus1fj.web.client.Session;
+import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
+import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
@@ -115,7 +115,7 @@ public class LoginScreen extends VerticalPanel {
 
     private void doLogin() {
 	if (LoginScreen.this.checkFields()) {
-	    GWTServiceUtil.getService().login(LoginScreen.this.userNameTextBox.getText(), LoginScreen.this.passwordTextBox.getText(),
+	    ClientUtil.getService().login(LoginScreen.this.userNameTextBox.getText(), LoginScreen.this.passwordTextBox.getText(),
 		    new AsyncCallback<UserDto>() {
 
 			@Override
@@ -125,7 +125,7 @@ public class LoginScreen extends VerticalPanel {
 
 			@Override
 			public void onSuccess(UserDto result) {
-			    Session.getInstance().setCurrentUser(result);
+			    ClientSession.getInstance().setCurrentUser(result);
 			    RootPanel.get("main").clear();
 			    RootPanel.get("main").add(new WelcomePanel());
 			}

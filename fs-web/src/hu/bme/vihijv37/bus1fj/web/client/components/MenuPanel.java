@@ -8,13 +8,13 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
-import hu.bme.vihijv37.bus1fj.web.client.Session;
+import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 
 public class MenuPanel extends Grid {
 
     public MenuPanel() {
 	super(1, 4);
-	String currentUserName = Session.getInstance().getCurrentUser() == null ? "unknown" : Session.getInstance().getCurrentUser().getName();
+	String currentUserName = ClientSession.getInstance().getCurrentUser() == null ? "unknown" : ClientSession.getInstance().getCurrentUser().getName();
 
 	Label welcomeLabel = new Label("Welcome, " + currentUserName + "!", false);
 	welcomeLabel.getElement().getStyle().setDisplay(Display.INLINE);
@@ -53,7 +53,7 @@ public class MenuPanel extends Grid {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
-		Session.getInstance().setCurrentUser(null);
+		ClientSession.getInstance().setCurrentUser(null);
 		RootPanel.get("main").clear();
 		RootPanel.get("main").add(new LoginScreen());
 	    }

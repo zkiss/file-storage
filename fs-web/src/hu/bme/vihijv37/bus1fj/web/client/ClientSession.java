@@ -2,17 +2,17 @@ package hu.bme.vihijv37.bus1fj.web.client;
 
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
-public class Session {
+public class ClientSession {
 
     private UserDto currentUser;
 
-    private static final Session instance = new Session();
+    private static final ClientSession instance = new ClientSession();
 
-    public static Session getInstance() {
-	return Session.instance;
+    public static ClientSession getInstance() {
+	return ClientSession.instance;
     }
 
-    private Session() {
+    private ClientSession() {
 	//
     }
 

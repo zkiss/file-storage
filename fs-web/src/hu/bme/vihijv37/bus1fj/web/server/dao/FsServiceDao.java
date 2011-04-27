@@ -4,32 +4,13 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import hu.bme.vihijv37.bus1fj.web.server.entity.File;
+import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
 
 public class FsServiceDao extends AbstractDao {
 
     public FsServiceDao(EntityManager entityManager) {
 	super(entityManager);
-    }
-
-    /**
-     * Felhasználó keresése ID alapján
-     * 
-     * @param id
-     * @return
-     * @throws DaoException
-     */
-    public User findUserById(long id) throws DaoException {
-	try {
-	    User user = (User) this.getEntityManager().createQuery( //
-		    "select u from " + User.class.getSimpleName() + " u" + //
-			    " where u.id = :id"). //
-		    setParameter("id", id).getSingleResult();
-	    return user;
-	} catch (RuntimeException ex) {
-	    throw new DaoException("Could not find User by id", ex);
-	}
     }
 
     /**
@@ -58,65 +39,22 @@ public class FsServiceDao extends AbstractDao {
     }
 
     /**
-     * Új {@link File} mentése
+     * Felhasználó feltöltéseinek lekérdezése elérési út szerint rendezve
      * 
-     * @param file
-     * @throws DaoException
-     */
-    public File insertFile(File file) throws DaoException {
-	try {
-	    this.getEntityManager().persist(file);
-	    return file;
-	} catch (RuntimeException e) {
-	    throw new DaoException("Could not persist " + file, e);
-	}
-    }
-
-    /**
-     * Új {@link User} mentése
-     * 
-     * @param user
+     * @param userId
      * @return
      * @throws DaoException
      */
-    public User insertUser(User user) throws DaoException {
+    public List<Upload> getUserUploads(long userId) throws DaoException {
 	try {
-	    this.getEntityManager().persist(user);
-	    return user;
+	    return AbstractDao.getResultList(this.getEntityManager().createQuery( //
+		    "select u from " + Upload.class.getSimpleName() + " u" + //
+			    " where u.user.id = :userId" + //
+			    " order by u.path"). //
+		    setParameter("userId", userId), Upload.class);
 	} catch (RuntimeException e) {
-	    throw new DaoException("Could not persist " + user, e);
+	    throw new DaoException("Could not get user uploads for User #" + userId, e);
 	}
     }
 
-    /**
-     * {@link File} rekord törlése
-     * 
-     * @param fileId
-     *            a File azonosítója
-     * @throws DaoException
-     */
-    public void removeFile(long fileId) throws DaoException {
-	try {
-	    this.getEntityManager().createQuery( //
-		    "delete from " + File.class.getSimpleName() + //
-			    " where id = :id"). //
-		    setParameter("id", fileId).executeUpdate();
-	} catch (RuntimeException e) {
-	    throw new DaoException("Could not delete File #" + fileId, e);
-	}
-    }
-
-    public User updateUser(long userId, String email, String name, String newPasswordHash) throws DaoException {
-	try {
-	    User user = this.findUserById(userId);
-	    user.setEmail(email);
-	    user.setName(name);
-	    if (newPasswordHash != null) {
-		user.setPassword(newPasswordHash);
-	    }
-	    return this.getEntityManager().merge(user);
-	} catch (RuntimeException e) {
-	    throw new DaoException("Could not update User #" + userId, e);
-	}
-    }
 }

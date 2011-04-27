@@ -13,8 +13,8 @@ import javax.persistence.Table;
  * @author Zoltan Kiss
  */
 @Entity
-@Table(name = "FILE")
-public class File extends EntityBase {
+@Table(name = "UPLOADS")
+public class Upload extends EntityBase {
 
     private static final long serialVersionUID = -6875800091975550956L;
 
