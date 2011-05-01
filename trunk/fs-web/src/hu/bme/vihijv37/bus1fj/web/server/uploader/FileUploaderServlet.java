@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import hu.bme.vihijv37.bus1fj.web.server.JpaManager;
-import hu.bme.vihijv37.bus1fj.web.server.ServerProperties;
+import hu.bme.vihijv37.bus1fj.web.server.ServerUtils;
 import hu.bme.vihijv37.bus1fj.web.server.dao.DaoException;
 import hu.bme.vihijv37.bus1fj.web.server.dao.FsServiceDao;
 import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
@@ -51,15 +51,16 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	    long userIdLong = Long.parseLong(userId);
 	    User user = this.findUserById(userIdLong);
 	    if (user != null) {
-		File userDir = new File(ServerProperties.getUploadDirectory(), user.getEmail());
-		if (!userDir.exists()) {
-		    userDir.mkdirs();
+		String uploadRelativePath = ServerUtils.getUploadDirRelativePath(user, uploadItem.getName());
+		destinationFile = new File(uploadRelativePath);
+		File uploadDir = destinationFile.getParentFile();
+		if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+		    // TODO exception: nem sikerült létrehozni a tárolómappát
+		    FileUploaderServlet.LOG.error("Could not create directory: " + uploadDir.getAbsolutePath());
 		}
-		destinationFile = new File(userDir.getPath(), uploadItem.getName());
 		if (destinationFile.createNewFile()) {
 		    uploadItem.write(destinationFile);
-		    String relativePath = ServerProperties.getUploadDirectory() + "\\" + user.getEmail() + "\\" + uploadItem.getName();
-		    this.insertFile(relativePath, userIdLong);
+		    this.insertFile(uploadRelativePath, userIdLong);
 		}
 	    }
 	} catch (Exception ex) {
@@ -102,7 +103,8 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	return null;
     }
 
-    private void insertFile(String path, long userId) throws ServiceException {
+    private void insertFile(String userRelativePath, long userId) throws ServiceException {
+	// TODO itt csak a user mappa relatív utat kell letárolni!!!
 	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
 	EntityManager em = emf.createEntityManager();
 	EntityTransaction transaction = em.getTransaction();
@@ -110,7 +112,7 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	    transaction.begin();
 	    Upload file = new Upload();
 	    FsServiceDao dao = new FsServiceDao(em);
-	    file.setPath(path);
+	    file.setPath(userRelativePath);
 	    file.setUser(dao.get(User.class, userId));
 	    dao.insert(file);
 	    transaction.commit();
