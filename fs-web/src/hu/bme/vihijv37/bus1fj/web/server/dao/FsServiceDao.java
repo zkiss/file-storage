@@ -47,11 +47,12 @@ public class FsServiceDao extends AbstractDao {
      */
     public List<Upload> getUserUploads(long userId) throws DaoException {
 	try {
-	    return AbstractDao.getResultList(this.getEntityManager().createQuery( //
+	    List<Upload> ret = AbstractDao.getResultList(this.getEntityManager().createQuery( //
 		    "select u from " + Upload.class.getSimpleName() + " u" + //
 			    " where u.user.id = :userId" + //
 			    " order by u.path"). //
 		    setParameter("userId", userId), Upload.class);
+	    return ret;
 	} catch (RuntimeException e) {
 	    throw new DaoException("Could not get user uploads for User #" + userId, e);
 	}
