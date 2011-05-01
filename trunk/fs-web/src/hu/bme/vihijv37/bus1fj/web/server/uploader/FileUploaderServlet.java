@@ -20,6 +20,7 @@ import hu.bme.vihijv37.bus1fj.web.server.dao.DaoException;
 import hu.bme.vihijv37.bus1fj.web.server.dao.FsServiceDao;
 import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadFormConstants;
 import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
 import org.apache.commons.fileupload.FileItem;
@@ -46,7 +47,7 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 
 	File destinationFile = null;
 	try {
-	    String userId = request.getParameter("userId");
+	    String userId = request.getParameter(UploadFormConstants.PARAM_USER_ID);
 	    long userIdLong = Long.parseLong(userId);
 	    User user = this.findUserById(userIdLong);
 	    if (user != null) {
@@ -57,7 +58,8 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 		destinationFile = new File(userDir.getPath(), uploadItem.getName());
 		if (destinationFile.createNewFile()) {
 		    uploadItem.write(destinationFile);
-		    this.inserFile(destinationFile.getPath(), userIdLong);
+		    String relativePath = ServerProperties.getUploadDirectory() + "\\" + user.getEmail() + "\\" + uploadItem.getName();
+		    this.insertFile(relativePath, userIdLong);
 		}
 	    }
 	} catch (Exception ex) {
@@ -90,7 +92,7 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	    Iterator<?> it = items.iterator();
 	    while (it.hasNext()) {
 		FileItem item = (FileItem) it.next();
-		if (!item.isFormField() && "uploadFormElement".equals(item.getFieldName())) {
+		if (!item.isFormField() && UploadFormConstants.UPLOADER_FORM_ELEMENT_ID.equals(item.getFieldName())) {
 		    return item;
 		}
 	    }
@@ -100,7 +102,7 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	return null;
     }
 
-    private void inserFile(String path, long userId) throws ServiceException {
+    private void insertFile(String path, long userId) throws ServiceException {
 	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
 	EntityManager em = emf.createEntityManager();
 	EntityTransaction transaction = em.getTransaction();

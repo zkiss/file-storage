@@ -2,21 +2,21 @@ package hu.bme.vihijv37.bus1fj.web.client.components;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
 import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
+import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
@@ -31,35 +31,54 @@ public class RegisterScreen extends VerticalPanel {
     public RegisterScreen() {
 	FlexTable contentTable = new FlexTable();
 	this.emailTextBox = new TextBox();
+	this.emailTextBox.addKeyUpHandler(new KeyUpHandler() {
+
+	    @Override
+	    public void onKeyUp(KeyUpEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    RegisterScreen.this.doRegister();
+		}
+	    }
+	});
+
 	this.userNameTextBox = new TextBox();
+	this.userNameTextBox.addKeyUpHandler(new KeyUpHandler() {
+
+	    @Override
+	    public void onKeyUp(KeyUpEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    RegisterScreen.this.doRegister();
+		}
+	    }
+	});
+
 	this.passwordTextBox = new PasswordTextBox();
+	this.passwordTextBox.addKeyUpHandler(new KeyUpHandler() {
+
+	    @Override
+	    public void onKeyUp(KeyUpEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    RegisterScreen.this.doRegister();
+		}
+	    }
+	});
+
 	this.reTypePasswordTextBox = new PasswordTextBox();
+	this.reTypePasswordTextBox.addKeyUpHandler(new KeyUpHandler() {
+
+	    @Override
+	    public void onKeyUp(KeyUpEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    RegisterScreen.this.doRegister();
+		}
+	    }
+	});
+
 	this.registerButton = new Button("Register", new ClickHandler() {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
-		if (RegisterScreen.this.checkFields()) {
-		    ClientUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), RegisterScreen.this.emailTextBox.getText(),
-			    RegisterScreen.this.passwordTextBox.getText(), new AsyncCallback<UserDto>() {
-				@Override
-				public void onFailure(Throwable caught) {
-				    MessageDialog.show("Error", caught.getMessage(), null);
-				};
-
-				@Override
-				public void onSuccess(UserDto result) {
-				    ClientSession.getInstance().setCurrentUser(result);
-				    MessageDialog.show("Info", "Save succesfully!", new CloseHandler<PopupPanel>() {
-
-					@Override
-					public void onClose(CloseEvent<PopupPanel> event) {
-					    RootPanel.get("main").clear();
-					    RootPanel.get("main").add(new LoginScreen());
-					}
-				    });
-				};
-			    });
-		}
+		RegisterScreen.this.doRegister();
 	    }
 	});
 	this.initPanel();
@@ -88,6 +107,26 @@ public class RegisterScreen extends VerticalPanel {
 	    MessageDialog.show("Message", "Passwords do not match!", null);
 	}
 	return ret;
+    }
+
+    private void doRegister() {
+	if (RegisterScreen.this.checkFields()) {
+	    ClientUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), RegisterScreen.this.emailTextBox.getText(),
+		    RegisterScreen.this.passwordTextBox.getText(), new AsyncCallback<UserDto>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			    MessageDialog.show("Error", caught.getMessage(), null);
+			};
+
+			@Override
+			public void onSuccess(UserDto result) {
+			    ClientSession.getInstance().setCurrentUser(result);
+			    RootPanel.get("main").clear();
+			    RootPanel.get("main").add(new WelcomePanel());
+			};
+		    });
+	}
+
     }
 
     private void initPanel() {

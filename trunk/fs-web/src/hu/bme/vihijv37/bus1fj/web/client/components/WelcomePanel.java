@@ -33,6 +33,7 @@ import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.Confir
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.Option;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
+import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadFormConstants;
 
 public class WelcomePanel extends VerticalPanel {
 
@@ -91,10 +92,10 @@ public class WelcomePanel extends VerticalPanel {
 	formPanel.setMethod(FormPanel.METHOD_POST);
 
 	String action = GWT.getHostPageBaseURL() + WelcomePanel.SERVLET_URL;
-	formPanel.setAction(action + "?userId=" + ClientSession.getInstance().getCurrentUser().getId());
+	formPanel.setAction(action + "?" + UploadFormConstants.PARAM_USER_ID + "=" + ClientSession.getInstance().getCurrentUser().getId());
 
 	final FileUpload uploader = new FileUpload();
-	uploader.setName("uploadFormElement");
+	uploader.setName(UploadFormConstants.UPLOADER_FORM_ELEMENT_ID);
 
 	HorizontalPanel formInnerPanel = new HorizontalPanel();
 	formInnerPanel.getElement().getStyle().setPaddingTop(3, Unit.PX);

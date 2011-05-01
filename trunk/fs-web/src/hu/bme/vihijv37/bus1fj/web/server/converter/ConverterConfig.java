@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 
 import hu.bme.vihijv37.bus1fj.web.server.converter.conversion.ConversionDefinition;
+import hu.bme.vihijv37.bus1fj.web.server.converter.conversion.Skip;
 import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
@@ -31,7 +32,7 @@ class ConverterConfig {
 	CONVERSION_DEFINITIONS = new LinkedList<ConversionDefinition>();
 
 	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(User.class, UserDto.class));
-	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(Upload.class, UploadDto.class));
+	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(Upload.class, UploadDto.class, new Skip("user")));
 
 	BURNT_IN_CONFIG = new ConverterConfig(ConverterConfig.CONVERSION_DEFINITIONS);
     }

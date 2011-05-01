@@ -54,7 +54,7 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	EntityManager em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
 	User user;
 	try {
-	    user = new FsServiceDao(em).getUser(userName, password);
+	    user = new FsServiceDao(em).getUser(userName, ServerUtils.hashPassword(password));
 	    if (user == null) {
 		throw new ServiceException("No such user");
 	    }
