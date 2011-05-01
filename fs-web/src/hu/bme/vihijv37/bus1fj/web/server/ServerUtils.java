@@ -21,6 +21,22 @@ public final class ServerUtils {
     private static final char[] HEXADECIMAL = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
     /**
+     * A fájl elérési útját adja meg a publikus mappához viszonyítva
+     * 
+     * @param user
+     *            a feltöltés gazdája
+     * @param uploadPath
+     *            a feltöltött fájl user tárolómappához viszonyított relatív
+     *            elérési útja (fájlnév)
+     * @return
+     */
+    public static String getUploadDirRelativePath(User user, String uploadPath) {
+	return ServerProperties.getUploadDirectory().getPath() + File.separator + //
+		user.getEmail() + File.separator + //
+		uploadPath;
+    }
+
+    /**
      * Visszaadja a pontos elérési útját egy feltöltésnek a szerveren
      * 
      * @param user
@@ -30,8 +46,8 @@ public final class ServerUtils {
      * @return
      */
     public static File getUploadFile(User user, String uploadPath) {
-	return new File(new File(ServerProperties.getUploadDirectory(), //
-		user.getEmail()), uploadPath);
+	return new File(ServerProperties.getUploadDirectory(), //
+		ServerUtils.getUploadDirRelativePath(user, uploadPath));
     }
 
     /**

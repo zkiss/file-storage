@@ -43,7 +43,8 @@ public class ServerProperties {
     }
 
     /**
-     * Az a könyvtár, ahova a felhasználók által feltöltött fájlok kerülnek
+     * Az a könyvtár, ahova a felhasználók által feltöltött fájlok kerülnek. A
+     * könyvtár relatív elérési út a webszerver publikus mappájához viszonyítva
      * 
      * @return
      */
