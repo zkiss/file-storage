@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -16,15 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import hu.bme.vihijv37.bus1fj.web.server.JpaManager;
 import hu.bme.vihijv37.bus1fj.web.server.ServerUtils;
-import hu.bme.vihijv37.bus1fj.web.server.dao.DaoException;
 import hu.bme.vihijv37.bus1fj.web.server.dao.FsServiceDao;
 import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadFormConstants;
-import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -39,91 +35,74 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	response.setContentType("text/plain");
-	FileItem uploadItem = this.getFileItem(request);
+	FileItem uploadItem = this.getFileItem(request, UploadFormConstants.UPLOADER_FORM_ELEMENT_ID);
 	if (uploadItem == null) {
+	    FileUploaderServlet.LOG.debug("Did not receive file upload");
 	    response.getWriter().write("NO-SCRIPT-DATA");
 	    return;
 	}
 
 	File destinationFile = null;
+	EntityManager em = null;
+	EntityTransaction transaction = null;
 	try {
-	    String userId = request.getParameter(UploadFormConstants.PARAM_USER_ID);
-	    long userIdLong = Long.parseLong(userId);
-	    User user = this.findUserById(userIdLong);
-	    if (user != null) {
-		String uploadRelativePath = ServerUtils.getUploadDirRelativePath(user, uploadItem.getName());
-		destinationFile = new File(uploadRelativePath);
-		File uploadDir = destinationFile.getParentFile();
-		if (!uploadDir.exists() && !uploadDir.mkdirs()) {
-		    // TODO exception: nem sikerült létrehozni a tárolómappát
-		    FileUploaderServlet.LOG.error("Could not create directory: " + uploadDir.getAbsolutePath());
-		}
+	    long userId = Long.parseLong(request.getParameter(UploadFormConstants.PARAM_USER_ID));
+	    em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
+	    FsServiceDao dao = new FsServiceDao(em);
+
+	    User user = dao.get(User.class, userId);
+	    final String uploadPath = uploadItem.getName();
+	    destinationFile = new File(ServerUtils.getUploadDirRelativePath(user, uploadPath));
+	    File uploadDir = destinationFile.getParentFile();
+	    if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+		FileUploaderServlet.LOG.error("Could not create directory: " + uploadDir.getAbsolutePath());
+	    } else {
 		if (destinationFile.createNewFile()) {
 		    uploadItem.write(destinationFile);
-		    this.insertFile(uploadRelativePath, userIdLong);
+
+		    Upload upload = new Upload();
+		    upload.setPath(uploadPath);
+		    upload.setUser(user);
+
+		    transaction = em.getTransaction();
+		    transaction.begin();
+		    dao.insert(upload);
+		    transaction.commit();
+		} else {
+		    FileUploaderServlet.LOG.info("File already exists: " + destinationFile.getAbsolutePath());
 		}
 	    }
-	} catch (Exception ex) {
-	    if ((destinationFile != null) && destinationFile.exists()) {
-		destinationFile.delete();
+	} catch (Exception e) {
+	    FileUploaderServlet.LOG.error("Could not save upload", e);
+	    if ((destinationFile != null) && destinationFile.exists() && destinationFile.delete()) {
+		FileUploaderServlet.LOG.fatal( //
+			"An error occured during the file upload process and could not delete the uploaded file, this file should be manually removed: "
+				+ destinationFile.getAbsolutePath());
 	    }
-	    FileUploaderServlet.LOG.error(ex.getMessage(), ex);
-	}
-
-    }
-
-    private User findUserById(long userId) throws ServiceException {
-	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
-	EntityManager em = emf.createEntityManager();
-	try {
-	    return new FsServiceDao(em).get(User.class, userId);
-	} catch (DaoException ex) {
-	    FileUploaderServlet.LOG.error(ex.getMessage(), ex);
-	    throw new ServiceException("Could not delete file from db");
-	} finally {
-	    em.close();
+	    if ((transaction != null) && transaction.isActive()) {
+		transaction.rollback();
+	    }
+	    if (em != null) {
+		em.close();
+	    }
 	}
     }
 
-    private FileItem getFileItem(HttpServletRequest request) {
-	FileItemFactory factory = new DiskFileItemFactory();
-	ServletFileUpload upload = new ServletFileUpload(factory);
+    private FileItem getFileItem(HttpServletRequest request, String fieldName) {
+	ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 	try {
 	    List<?> items = upload.parseRequest(request);
 	    Iterator<?> it = items.iterator();
 	    while (it.hasNext()) {
 		FileItem item = (FileItem) it.next();
-		if (!item.isFormField() && UploadFormConstants.UPLOADER_FORM_ELEMENT_ID.equals(item.getFieldName())) {
+		if (!item.isFormField() && fieldName.equals(item.getFieldName())) {
 		    return item;
 		}
 	    }
 	} catch (FileUploadException e) {
+	    FileUploaderServlet.LOG.error("Could not parse request", e);
 	    return null;
 	}
 	return null;
-    }
-
-    private void insertFile(String userRelativePath, long userId) throws ServiceException {
-	// TODO itt csak a user mappa relatív utat kell letárolni!!!
-	EntityManagerFactory emf = JpaManager.getInstance().getEntityManagerFactory();
-	EntityManager em = emf.createEntityManager();
-	EntityTransaction transaction = em.getTransaction();
-	try {
-	    transaction.begin();
-	    Upload file = new Upload();
-	    FsServiceDao dao = new FsServiceDao(em);
-	    file.setPath(userRelativePath);
-	    file.setUser(dao.get(User.class, userId));
-	    dao.insert(file);
-	    transaction.commit();
-	} catch (DaoException e) {
-	    FileUploaderServlet.LOG.error(e.getMessage(), e);
-	    throw new ServiceException("Could not delete file from db");
-	} finally {
-	    if (transaction.isActive()) {
-		transaction.rollback();
-	    }
-	    em.close();
-	}
     }
 }
