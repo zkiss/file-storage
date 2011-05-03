@@ -32,10 +32,14 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
     public List<UploadDto> getUserUploads(long userId) throws ServiceException {
 	EntityManager em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
 	try {
-	    List<Upload> userUploads = new FsServiceDao(em).getUserUploads(userId);
+	    FsServiceDao dao = new FsServiceDao(em);
+	    User user = dao.get(User.class, userId);
+	    List<Upload> userUploads = dao.getUserUploads(userId);
 	    List<UploadDto> ret = new ArrayList<UploadDto>(userUploads.size());
 	    for (Upload upload : userUploads) {
-		ret.add(Converter.<UploadDto> convert(upload));
+		UploadDto dto = Converter.convert(upload);
+		dto.setPath(ServerUtils.getUploadDirRelativePath(user, upload.getPath()));
+		ret.add(dto);
 	    }
 	    return ret;
 	} catch (DaoException e) {

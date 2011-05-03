@@ -21,7 +21,8 @@ public final class ServerUtils {
     private static final char[] HEXADECIMAL = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
     /**
-     * A fájl elérési útját adja meg a publikus mappához viszonyítva
+     * A fájl elérési útját adja meg a webszerver publikus mappájához
+     * viszonyítva
      * 
      * @param user
      *            a feltöltés gazdája
@@ -60,7 +61,7 @@ public final class ServerUtils {
 	StringBuilder sb = null;
 
 	try {
-	    MessageDigest md = MessageDigest.getInstance("MD5"); //$NON-NLS-1$
+	    MessageDigest md = MessageDigest.getInstance("MD5");
 	    md.reset();
 
 	    byte[] bytes = md.digest(plainPassword.getBytes());
