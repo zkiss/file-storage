@@ -66,5 +66,21 @@
 		</war>
 	</target>
 
+	<target name="dist-src" depends="clean">
+		<mkdir dir="${dist-src}" />
+		<copy todir="${dist-src}">
+			<fileset dir="${basedir}">
+				<exclude name="bin\**\*" />
+				<exclude name="test-classes\**\*" />
+				<exclude name="${war}\files\**\*" />
+				<exclude name="${war}\${gwt.module.name}\**\*" />
+				<exclude name="${war}\logs\**\*" />
+				<exclude name="${war}\WEB-INF\classes\**\*" />
+				<exclude name="${war}\WEB-INF\deploy\**\*" />
+				<exclude name="${war}\WEB-INF\lib\**\*" />
+			</fileset>
+		</copy>
+	</target>
+
 </project>
 

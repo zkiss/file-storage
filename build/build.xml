@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="build-all" default="dist">
+<project name="build-all" default="dist-src">
 
 	<import file="common.xml" />
 
 	<property name="dir-dist" value="dist" />
-	<property name="dir-config" value="config" />
 
-	<!--
-	<target name="dist">
-	<target name="dist" depends="dist-all">
-	-->
-	<target name="dist" depends="dist-all">
+	<target name="dist-src" depends="dist-src-all">
 		<delete dir="${dir-dist}" />
 		<mkdir dir="${dir-dist}" />
 
-		<zip destfile="${dir-dist}\file-storage.zip">
-			<!-- TODO: minden projekthez ant target, hogy src dist -->
+		<zip destfile="${dir-dist}\bus1fj-file-storage.zip">
 			<!-- forrás -->
-			<zipfileset dir="${trunk}">
-				<exclude name="**\*.class" />
-				<exclude name="**\*.jar"  />
-				<exclude name="**\*.zip"  />
+			<zipfileset dir="${dir-build}" prefix="build">
+				<exclude name="dist" />
+				<exclude name="readme.txt" />
 			</zipfileset>
+			<zipfileset dir="${dir-common}\${dist-src}" prefix="fs-common" />
+			<zipfileset dir="${dir-schemagen}\${dist-src}" prefix="fs-schemagen" />
+			<zipfileset dir="${dir-web}\${dist-src}" prefix="fs-web" />
+			<zipfileset dir="${dir-lib}\${dist-src}" prefix="lib" />
+			<zipfileset dir="${dir-lib-common}\${dist-src}" prefix="lib-common" />
+			<zipfileset dir="${dir-lib-web}\${dist-src}" prefix="lib-web" />
 
 			<!-- doksik -->
 			<zipfileset file="${basedir}\readme.txt" />
@@ -34,10 +33,13 @@
 		<ant dir="${dir-web}" target="clean" />
 	</target>
 
-	<target name="dist-all">
-		<ant dir="${dir-common}" target="dist" />
-		<ant dir="${dir-web}" target="dist" />
-		<ant dir="${dir-schemagen}" target="dist" />
+	<target name="dist-src-all">
+		<ant dir="${dir-common}" target="dist-src" />
+		<ant dir="${dir-schemagen}" target="dist-src" />
+		<ant dir="${dir-web}" target="dist-src" />
+		<ant dir="${dir-lib}" target="dist-src" />
+		<ant dir="${dir-lib-common}" target="dist-src" />
+		<ant dir="${dir-lib-web}" target="dist-src" />
 	</target>
 
 </project>

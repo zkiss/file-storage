@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="lib-common" default="dist-src">
+
+	<import file="../build/common.xml" />
+
+	<target name="clean">
+		<delete dir="${ant}" />
+	</target>
+
+	<target name="dist-src" depends="clean">
+		<mkdir dir="${dist-src}" />
+		<copy todir="${dist-src}" includeemptydirs="false">
+			<fileset dir="${basedir}" excludes="bin\**\*">
+			</fileset>
+		</copy>
+	</target>
+
+</project>
+
