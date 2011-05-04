@@ -9,6 +9,7 @@
 
 	<target name="dist-src" depends="clean">
 		<mkdir dir="${dist-src}" />
+		<!-- Direkt meghagyjuk a könyvtárszerkezetet, hogy könnyebben helyükre kerüljenek a jarok -->
 		<copy includeemptydirs="yes" todir="${dist-src}">
 			<fileset dir="${basedir}">
 				<exclude name="bin\**\*" />
