@@ -10,7 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Jelszó hashelésének az algoritmusát tartalmazza
+ * Szerver oldali utility függvényeket tartalmaz
  * 
  * @author Zoltan Kiss
  */
@@ -62,7 +62,6 @@ public final class ServerUtils {
 
 	try {
 	    MessageDigest md = MessageDigest.getInstance("MD5");
-	    md.reset();
 
 	    byte[] bytes = md.digest(plainPassword.getBytes());
 	    sb = new StringBuilder(2 * bytes.length);
@@ -73,7 +72,8 @@ public final class ServerUtils {
 		sb.append(ServerUtils.HEXADECIMAL[low]);
 	    }
 	} catch (NoSuchAlgorithmException e) {
-	    ServerUtils.LOG.error("Could not hash password", e);
+	    // lehetetlen
+	    ServerUtils.LOG.fatal("Could not hash password", e);
 	}
 
 	return sb != null ? sb.toString() : "";

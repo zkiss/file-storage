@@ -18,7 +18,7 @@ import hu.bme.vihijv37.bus1fj.web.server.ServerUtils;
 import hu.bme.vihijv37.bus1fj.web.server.dao.FsServiceDao;
 import hu.bme.vihijv37.bus1fj.web.server.entity.Upload;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadFormConstants;
+import hu.bme.vihijv37.bus1fj.web.shared.UploadFormConstants;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -27,6 +27,12 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Fájlok feltöltését lekezelő servlet implementáció. Sajnos ezt a GWT még nem
+ * támogatja beépítetten.
+ * 
+ * @author Zoltan Kiss
+ */
 public class FileUploaderServlet extends HttpServlet implements Servlet {
 
     private static final long serialVersionUID = 4157585117575772801L;
@@ -46,9 +52,9 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 	EntityManager em = null;
 	EntityTransaction transaction = null;
 	try {
-	    long userId = Long.parseLong(request.getParameter(UploadFormConstants.PARAM_USER_ID));
+	    final long userId = Long.parseLong(request.getParameter(UploadFormConstants.USER_ID));
 	    em = JpaManager.getInstance().getEntityManagerFactory().createEntityManager();
-	    FsServiceDao dao = new FsServiceDao(em);
+	    final FsServiceDao dao = new FsServiceDao(em);
 
 	    User user = dao.get(User.class, userId);
 	    final String uploadPath = uploadItem.getName();

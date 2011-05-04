@@ -31,8 +31,8 @@ class ConverterConfig {
     static {
 	CONVERSION_DEFINITIONS = new LinkedList<ConversionDefinition>();
 
-	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(User.class, UserDto.class));
-	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(Upload.class, UploadDto.class, new Skip("user")));
+	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(User.class, UserDto.class, new Skip("uploads")));
+	ConverterConfig.CONVERSION_DEFINITIONS.add(new ConversionDefinition(Upload.class, UploadDto.class, new Skip("user"), new Skip("urlPath")));
 
 	BURNT_IN_CONFIG = new ConverterConfig(ConverterConfig.CONVERSION_DEFINITIONS);
     }

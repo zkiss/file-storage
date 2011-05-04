@@ -11,8 +11,24 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+/**
+ * Felhasználói üzenetek megjelenítésére szolgáló segédosztály
+ * 
+ * @author Zoltan Kiss
+ */
 public class MessageDialog extends DialogBox {
 
+    /**
+     * Üzenet megjelenítése
+     * 
+     * @param captionText
+     *            címsor
+     * @param message
+     *            üzenet
+     * @param closeHandler
+     *            a dialógusablak bezárása esetén visszahívott listener,
+     *            <code>null</code> is lehet.
+     */
     public static void show(String captionText, String message, CloseHandler<PopupPanel> closeHandler) {
 	MessageDialog messageDialog = new MessageDialog(captionText, message);
 	messageDialog.center();
@@ -24,7 +40,7 @@ public class MessageDialog extends DialogBox {
 
     private final Button closeButton;
 
-    public MessageDialog(String captionText, String message) {
+    private MessageDialog(String captionText, String message) {
 	super(true, true);
 	this.setText(captionText);
 

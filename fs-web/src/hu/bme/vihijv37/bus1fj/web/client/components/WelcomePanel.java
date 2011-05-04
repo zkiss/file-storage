@@ -10,7 +10,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -25,22 +24,23 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import hu.bme.vihijv37.bus1fj.web.client.AbstractAsyncCallback;
 import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
+import hu.bme.vihijv37.bus1fj.web.client.GuiNames;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationCallback;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.ConfirmOption;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.Option;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
+import hu.bme.vihijv37.bus1fj.web.shared.UploadFormConstants;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
-import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadFormConstants;
 
 public class WelcomePanel extends VerticalPanel {
 
-    private static final String SERVLET_URL = "FsWeb/fileUploader";
     private static final String WIDTH = "696px";
     private FlexTable contentTable;
-    private List<UploadDto> fileList;
+    private List<UploadDto> uploadList;
 
     public WelcomePanel() {
 	this.add(new MenuPanel());
@@ -56,10 +56,10 @@ public class WelcomePanel extends VerticalPanel {
     private void createGui() {
 	this.contentTable.removeAllRows();
 	int row = 0;
-	for (final UploadDto file : this.fileList) {
-	    String url = "<a href=\"" + file.getPath() + "\">" + ClientUtil.getFileName(file.getPath()) + "</a>";
+	for (final UploadDto upload : this.uploadList) {
+	    String url = "<a href=\"" + upload.getUrlPath() + "\">" + upload.getPath() + "</a>";
 	    HTML link = new HTML(url);
-	    link.setStyleName("link");
+	    link.setStyleName(GuiNames.STYLE_LINK);
 	    this.contentTable.setWidget(row, 0, link);
 	    Button deleteBtn = new Button("Delete", new ClickHandler() {
 
@@ -72,7 +72,7 @@ public class WelcomePanel extends VerticalPanel {
 			@Override
 			public void onConfirmation(Boolean result) {
 			    if (result) {
-				WelcomePanel.this.removeFile(file);
+				WelcomePanel.this.removeFile(upload);
 			    }
 			}
 		    };
@@ -82,8 +82,8 @@ public class WelcomePanel extends VerticalPanel {
 	    });
 	    this.contentTable.setWidget(row, 1, deleteBtn);
 	    this.contentTable.getCellFormatter().setWidth(row, 0, WelcomePanel.WIDTH);
-	    this.contentTable.getCellFormatter().setStyleName(row, 0, "tableRow");
-	    this.contentTable.getCellFormatter().setStyleName(row, 1, "tableRow");
+	    this.contentTable.getCellFormatter().setStyleName(row, 0, GuiNames.STYLE_TABLE_ROW);
+	    this.contentTable.getCellFormatter().setStyleName(row, 1, GuiNames.STYLE_TABLE_ROW);
 	    this.contentTable.getCellFormatter().setHorizontalAlignment(row, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 	    row++;
 	}
@@ -91,13 +91,13 @@ public class WelcomePanel extends VerticalPanel {
 	formPanel.setEncoding(FormPanel.ENCODING_MULTIPART);
 	formPanel.setMethod(FormPanel.METHOD_POST);
 
-	String action = GWT.getHostPageBaseURL() + WelcomePanel.SERVLET_URL;
-	formPanel.setAction(action + "?" + UploadFormConstants.PARAM_USER_ID + "=" + ClientSession.getInstance().getCurrentUser().getId());
+	String action = GWT.getHostPageBaseURL() + UploadFormConstants.SERVLET_URL;
+	formPanel.setAction(action + "?" + UploadFormConstants.USER_ID + "=" + ClientSession.getInstance().getCurrentUser().getId());
 
 	final FileUpload uploader = new FileUpload();
 	uploader.setName(UploadFormConstants.UPLOADER_FORM_ELEMENT_ID);
 
-	HorizontalPanel formInnerPanel = new HorizontalPanel();
+	final HorizontalPanel formInnerPanel = new HorizontalPanel();
 	formInnerPanel.getElement().getStyle().setPaddingTop(3, Unit.PX);
 	formInnerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 	formInnerPanel.add(uploader);
@@ -114,10 +114,9 @@ public class WelcomePanel extends VerticalPanel {
 	}));
 
 	formPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
-
 	    @Override
 	    public void onSubmitComplete(SubmitCompleteEvent event) {
-		MessageDialog.show("Info", "Fileupload successfully!", new CloseHandler<PopupPanel>() {
+		MessageDialog.show("Info", "File uploaded successfully!", new CloseHandler<PopupPanel>() {
 
 		    @Override
 		    public void onClose(CloseEvent<PopupPanel> event) {
@@ -133,18 +132,12 @@ public class WelcomePanel extends VerticalPanel {
     }
 
     private void loadUserFiles() {
-	ClientUtil.getService().getUserUploads(ClientSession.getInstance().getCurrentUser().getId(), new AsyncCallback<List<UploadDto>>() {
-
-	    @Override
-	    public void onFailure(Throwable caught) {
-		MessageDialog.show("Error", caught.getMessage(), null);
-	    }
-
+	ClientUtil.getService().getUserUploads(ClientSession.getInstance().getCurrentUser().getId(), new AbstractAsyncCallback<List<UploadDto>>() {
 	    @Override
 	    public void onSuccess(List<UploadDto> result) {
-		WelcomePanel.this.fileList = result;
-		if (WelcomePanel.this.fileList == null) {
-		    WelcomePanel.this.fileList = new ArrayList<UploadDto>(0);
+		WelcomePanel.this.uploadList = result;
+		if (WelcomePanel.this.uploadList == null) {
+		    WelcomePanel.this.uploadList = new ArrayList<UploadDto>(0);
 		}
 		WelcomePanel.this.createGui();
 	    }
@@ -152,13 +145,7 @@ public class WelcomePanel extends VerticalPanel {
     }
 
     private void removeFile(final UploadDto file) {
-	ClientUtil.getService().removeFile(file.getId(), new AsyncCallback<Void>() {
-
-	    @Override
-	    public void onFailure(Throwable caught) {
-		MessageDialog.show("Error", caught.getMessage(), null);
-	    }
-
+	ClientUtil.getService().removeFile(file.getId(), new AbstractAsyncCallback<Void>() {
 	    @Override
 	    public void onSuccess(Void result) {
 		WelcomePanel.this.loadUserFiles();

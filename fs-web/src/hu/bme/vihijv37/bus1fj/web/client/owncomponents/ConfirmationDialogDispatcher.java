@@ -12,7 +12,12 @@ public class ConfirmationDialogDispatcher {
     }
 
     public void fireEvent(Boolean event) {
-	for (ConfirmationCallback handler : this.handlerList) {
+	/*
+	 * Elkerüljük a ConcurrentModificationException-t azzal, hogy lemásoljuk
+	 * a listener-ek listáját.
+	 */
+	ArrayList<ConfirmationCallback> listenerCpy = new ArrayList<ConfirmationCallback>(this.handlerList);
+	for (ConfirmationCallback handler : listenerCpy) {
 	    handler.onConfirmation(event);
 	}
     }

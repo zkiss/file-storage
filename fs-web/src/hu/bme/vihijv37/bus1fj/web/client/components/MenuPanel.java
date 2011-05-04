@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
+import hu.bme.vihijv37.bus1fj.web.client.GuiNames;
 
 public class MenuPanel extends Grid {
 
@@ -21,41 +22,41 @@ public class MenuPanel extends Grid {
 	welcomeLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_DEFAULT);
 
 	Label welcomePageLabel = new Label("Welcome page", false);
-	welcomePageLabel.setStyleName("link");
+	welcomePageLabel.setStyleName(GuiNames.STYLE_LINK);
 	welcomePageLabel.getElement().getStyle().setDisplay(Display.INLINE);
 	welcomePageLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	welcomePageLabel.addClickHandler(new ClickHandler() {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
-		RootPanel.get("main").clear();
-		RootPanel.get("main").add(new WelcomePanel());
+		RootPanel.get(GuiNames.DOM_MAIN).clear();
+		RootPanel.get(GuiNames.DOM_MAIN).add(new WelcomePanel());
 	    }
 	});
 
 	Label settingsLabel = new Label("User settings", false);
-	settingsLabel.setStyleName("link");
+	settingsLabel.setStyleName(GuiNames.STYLE_LINK);
 	settingsLabel.getElement().getStyle().setDisplay(Display.INLINE);
 	settingsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	settingsLabel.addClickHandler(new ClickHandler() {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
-		RootPanel.get("main").clear();
-		RootPanel.get("main").add(new UserSettingsPanel());
+		RootPanel.get(GuiNames.DOM_MAIN).clear();
+		RootPanel.get(GuiNames.DOM_MAIN).add(new UserSettingsPanel());
 	    }
 	});
 
 	Label logoutLabel = new Label("Logout", false);
-	logoutLabel.setStyleName("link");
+	logoutLabel.setStyleName(GuiNames.STYLE_LINK);
 	logoutLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	logoutLabel.addClickHandler(new ClickHandler() {
 
 	    @Override
 	    public void onClick(ClickEvent event) {
 		ClientSession.getInstance().setCurrentUser(null);
-		RootPanel.get("main").clear();
-		RootPanel.get("main").add(new LoginScreen());
+		RootPanel.get(GuiNames.DOM_MAIN).clear();
+		RootPanel.get(GuiNames.DOM_MAIN).add(new LoginScreen());
 	    }
 	});
 
@@ -78,8 +79,8 @@ public class MenuPanel extends Grid {
 	this.getCellFormatter().setWidth(0, 2, "60px");
 	this.getCellFormatter().setWidth(0, 3, "30px");
 
-	this.getCellFormatter().setStyleName(0, 1, "topGridCell");
-	this.getCellFormatter().setStyleName(0, 2, "topGridCell");
+	this.getCellFormatter().setStyleName(0, 1, GuiNames.STYLE_TOP_GRID_CELL);
+	this.getCellFormatter().setStyleName(0, 2, GuiNames.STYLE_TOP_GRID_CELL);
     }
 
 }
