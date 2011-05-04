@@ -71,19 +71,19 @@ public class WelcomePanel extends VerticalPanel {
 
 			@Override
 			public void onConfirmation(Boolean result) {
-			    if (result) {
+			    if ((result != null) && result) {
 				WelcomePanel.this.removeFile(upload);
 			    }
 			}
 		    };
-		    List<ConfirmOption> options = Arrays.asList(new ConfirmOption(Option.YES, "Yes"), new ConfirmOption(Option.NO, "No"));
+		    List<ConfirmOption> options = Arrays.asList(new ConfirmOption(Option.YES, "Yes"), new ConfirmOption(Option.CANCEL, "Cancel"));
 		    ConfirmationDialog.show(options, "Please confirm", innerWidget, handler);
 		}
 	    });
 	    this.contentTable.setWidget(row, 1, deleteBtn);
 	    this.contentTable.getCellFormatter().setWidth(row, 0, WelcomePanel.WIDTH);
-	    this.contentTable.getCellFormatter().setStyleName(row, 0, GuiNames.STYLE_TABLE_ROW);
-	    this.contentTable.getCellFormatter().setStyleName(row, 1, GuiNames.STYLE_TABLE_ROW);
+	    this.contentTable.getCellFormatter().setStyleName(row, 0, GuiNames.STYLE_TABLE_CELL);
+	    this.contentTable.getCellFormatter().setStyleName(row, 1, GuiNames.STYLE_TABLE_CELL);
 	    this.contentTable.getCellFormatter().setHorizontalAlignment(row, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 	    row++;
 	}

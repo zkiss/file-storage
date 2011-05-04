@@ -13,12 +13,18 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * TODO javadoc
+ * Tetszőleges tartalom megjelenítésére szolgáló ablak, 3 nyugtázási
+ * lehetőséggel.
+ * 
  * 
  * @author Zoltan Kiss
  */
 public class ConfirmationDialog extends DialogBox {
-
+    /**
+     * Az egyes opciók és a nekik megfelelő gombok feliratát összefogó osztály
+     * 
+     * @author Zoltan Kiss
+     */
     public static class ConfirmOption {
 	private final Option option;
 	private final String buttonText;
@@ -49,13 +55,20 @@ public class ConfirmationDialog extends DialogBox {
 	YES, CANCEL, NO, ;
     }
 
+    private static final String BUTTON_WIDTH = "70px";
+
     /**
-     * TODO javadoc
+     * Dialógusablak megnyitása
      * 
      * @param options
+     *            A lehetséges opciók listája, melyek közül a felhasználó
+     *            választhat
      * @param captionText
+     *            Címsor
      * @param innerWidget
+     *            Belső widget
      * @param handler
+     *            Bármely gombra kattintáskor meghívott listener
      */
     public static void show(List<ConfirmOption> options, String captionText, Widget innerWidget, ConfirmationCallback handler) {
 	ConfirmationDialog dialog = new ConfirmationDialog(options, captionText, innerWidget);
@@ -70,6 +83,7 @@ public class ConfirmationDialog extends DialogBox {
 	super(true, true);
 	this.setText(captionText);
 	VerticalPanel innerPanel = new VerticalPanel();
+	innerPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 	innerPanel.getElement().getStyle().setPadding(5, Unit.PX);
 	innerPanel.setSpacing(5);
 	innerPanel.add(innerWidget);
@@ -95,6 +109,7 @@ public class ConfirmationDialog extends DialogBox {
 			ConfirmationDialog.this.hide(true);
 		    }
 		});
+		yesBtn.setWidth(ConfirmationDialog.BUTTON_WIDTH);
 		ret.add(yesBtn);
 		break;
 	    case NO:
@@ -106,6 +121,7 @@ public class ConfirmationDialog extends DialogBox {
 			ConfirmationDialog.this.hide(true);
 		    }
 		});
+		noBtn.setWidth(ConfirmationDialog.BUTTON_WIDTH);
 		ret.add(noBtn);
 		break;
 	    default:
@@ -117,6 +133,7 @@ public class ConfirmationDialog extends DialogBox {
 			ConfirmationDialog.this.hide(true);
 		    }
 		});
+		cancelButton.setWidth(ConfirmationDialog.BUTTON_WIDTH);
 		ret.add(cancelButton);
 		break;
 	    }

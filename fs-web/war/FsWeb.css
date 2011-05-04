@@ -34,7 +34,7 @@ body {
 	border-right: solid black 1px;
 }
 
-.tableRow {
+.tableCell {
 	border: none;
 	border-bottom: dotted 1px gray;
 }

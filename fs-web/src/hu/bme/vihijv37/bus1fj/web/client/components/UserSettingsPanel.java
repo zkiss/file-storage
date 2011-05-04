@@ -74,12 +74,31 @@ public class UserSettingsPanel extends VerticalPanel {
 	grid.setText(row, 0, "New password");
 	this.passTb = new PasswordTextBox();
 	this.passTb.setWidth(UserSettingsPanel.WIDTH);
+	this.passTb.addKeyUpHandler(new KeyUpHandler() {
+
+	    @Override
+	    public void onKeyUp(KeyUpEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    UserSettingsPanel.this.doSave();
+		}
+
+	    }
+	});
 	grid.setWidget(row, 1, this.passTb);
 	row++;
 
 	this.setRowSizeAndAlignment(row, grid);
 	grid.setText(row, 0, "New password again");
 	this.passReTb = new PasswordTextBox();
+	this.passReTb.addKeyUpHandler(new KeyUpHandler() {
+
+	    @Override
+	    public void onKeyUp(KeyUpEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    UserSettingsPanel.this.doSave();
+		}
+	    }
+	});
 	this.passReTb.setWidth(UserSettingsPanel.WIDTH);
 	grid.setWidget(row, 1, this.passReTb);
 	row++;
