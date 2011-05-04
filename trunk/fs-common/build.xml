@@ -20,5 +20,14 @@
 		</jar>
 	</target>
 
+	<target name="dist-src" depends="clean">
+		<mkdir dir="${dist-src}" />
+		<copy todir="${dist-src}">
+			<fileset dir="${basedir}">
+				<exclude name="bin\**\*" />
+			</fileset>
+		</copy>
+	</target>
+
 </project>
 

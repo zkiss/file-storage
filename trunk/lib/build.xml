@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="lib" default="dist-src">
+
+	<import file="../build/common.xml" />
+
+	<target name="clean">
+		<delete dir="${ant}" />
+	</target>
+
+	<target name="dist-src" depends="clean">
+		<mkdir dir="${dist-src}" />
+		<copy includeemptydirs="yes" todir="${dist-src}">
+			<fileset dir="${basedir}">
+				<exclude name="bin\**\*" />
+				<exclude name="**\*.jar" />
+				<exclude name="**\*.zip" />
+			</fileset>
+		</copy>
+	</target>
+
+</project>
+

@@ -10,11 +10,15 @@
 	<property name="ant" value="bin\ant" />
 	<property name="bin" value="${ant}\classes" />
 	<property name="dist" value="${ant}\dist" />
+	<property name="dist-src" value="${ant}\dist-src" />
 
-	<property name="dir-lib" value="${trunk}\lib" />
+	<property name="dir-build" value="${basedir}" />
 	<property name="dir-common" value="${trunk}\fs-common" />
 	<property name="dir-schemagen" value="${trunk}\fs-schemagen" />
 	<property name="dir-web" value="${trunk}\fs-web" />
+	<property name="dir-lib" value="${trunk}\lib" />
+	<property name="dir-lib-common" value="${trunk}\lib-common" />
+	<property name="dir-lib-web" value="${trunk}\lib-web" />
 
 	<path id="path-src">
 		<pathelement location="${src}\**\*" />
@@ -26,7 +30,7 @@
 			<file name="ejb3-persistence.jar" />
 		</filelist>
 	</path>
-	
+
 	<path id="path-lib-web">
 		<filelist dir="${dir-lib}">
 			<file name="commons-fileupload-1.2.1.jar" />
