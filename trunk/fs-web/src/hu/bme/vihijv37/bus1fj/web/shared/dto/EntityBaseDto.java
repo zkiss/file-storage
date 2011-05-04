@@ -53,7 +53,7 @@ public abstract class EntityBaseDto implements Serializable {
 	return this.toString("EntityBase");
     }
 
-    protected String toString(String className) {
+    String toString(String className) {
 	return className + " [#" + this.id + "]";
     }
 

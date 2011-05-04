@@ -5,7 +5,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -15,8 +14,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import hu.bme.vihijv37.bus1fj.web.client.AbstractAsyncCallback;
 import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
+import hu.bme.vihijv37.bus1fj.web.client.GuiNames;
 import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
@@ -112,18 +113,13 @@ public class RegisterScreen extends VerticalPanel {
     private void doRegister() {
 	if (RegisterScreen.this.checkFields()) {
 	    ClientUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), RegisterScreen.this.emailTextBox.getText(),
-		    RegisterScreen.this.passwordTextBox.getText(), new AsyncCallback<UserDto>() {
-			@Override
-			public void onFailure(Throwable caught) {
-			    MessageDialog.show("Error", caught.getMessage(), null);
-			};
-
+		    RegisterScreen.this.passwordTextBox.getText(), new AbstractAsyncCallback<UserDto>() {
 			@Override
 			public void onSuccess(UserDto result) {
 			    ClientSession.getInstance().setCurrentUser(result);
-			    RootPanel.get("main").clear();
-			    RootPanel.get("main").add(new WelcomePanel());
-			};
+			    RootPanel.get(GuiNames.DOM_MAIN).clear();
+			    RootPanel.get(GuiNames.DOM_MAIN).add(new WelcomePanel());
+			}
 		    });
 	}
 

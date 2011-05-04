@@ -2,7 +2,13 @@ package hu.bme.vihijv37.bus1fj.web.server;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 
+/**
+ * A {@link PersistenceContext} létrehozásáért felelős
+ * 
+ * @author Zoltan Kiss
+ */
 public final class JpaManager {
 
     private static final String PERSISTENCE_UNIT_NAME = "FILESERVICE";

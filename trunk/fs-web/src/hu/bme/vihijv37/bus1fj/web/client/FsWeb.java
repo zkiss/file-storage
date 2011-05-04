@@ -10,8 +10,8 @@ public class FsWeb implements EntryPoint {
     @Override
     public void onModuleLoad() {
 	LoginScreen loginScreen = new LoginScreen();
-	RootPanel.get("main").clear();
-	RootPanel.get("main").add(loginScreen);
+	RootPanel.get(GuiNames.DOM_MAIN).clear();
+	RootPanel.get(GuiNames.DOM_MAIN).add(loginScreen);
     }
 
 }

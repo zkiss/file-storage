@@ -12,6 +12,11 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * TODO javadoc
+ * 
+ * @author Zoltan Kiss
+ */
 public class ConfirmationDialog extends DialogBox {
 
     public static class ConfirmOption {
@@ -44,6 +49,14 @@ public class ConfirmationDialog extends DialogBox {
 	YES, CANCEL, NO, ;
     }
 
+    /**
+     * TODO javadoc
+     * 
+     * @param options
+     * @param captionText
+     * @param innerWidget
+     * @param handler
+     */
     public static void show(List<ConfirmOption> options, String captionText, Widget innerWidget, ConfirmationCallback handler) {
 	ConfirmationDialog dialog = new ConfirmationDialog(options, captionText, innerWidget);
 	dialog.addConfirmationHandler(handler);

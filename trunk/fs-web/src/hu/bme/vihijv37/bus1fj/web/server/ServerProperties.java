@@ -8,6 +8,13 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * A szerver oldali beállításokat tároló <code>server.properties</code> fájlból
+ * olvassa fel a beállításokat és azokat objektumorientált módon elérhetővé
+ * teszi.
+ * 
+ * @author Zoltan Kiss
+ */
 public class ServerProperties {
 
     private static final Log LOG = LogFactory.getLog(ServerProperties.class);
@@ -18,20 +25,20 @@ public class ServerProperties {
 
     static {
 	Properties properties = new Properties();
-	InputStream resourceAsStream = null;
+	InputStream is = null;
 	try {
-	    resourceAsStream = ServerProperties.class.getResourceAsStream(ServerProperties.PROPERTIES_FILE);
-	    if (resourceAsStream != null) {
-		properties.load(resourceAsStream);
+	    is = ServerProperties.class.getResourceAsStream(ServerProperties.PROPERTIES_FILE);
+	    if (is != null) {
+		properties.load(is);
 	    }
-	} catch (IOException ex) {
-	    ServerProperties.LOG.error("Could not read properties file", ex);
+	} catch (Exception e) {
+	    ServerProperties.LOG.error("Could not read properties file", e);
 	} finally {
-	    if (resourceAsStream != null) {
+	    if (is != null) {
 		try {
-		    resourceAsStream.close();
+		    is.close();
 		} catch (IOException e) {
-		    ServerProperties.LOG.error("Could not close stream", e);
+		    ServerProperties.LOG.error("Could not close inputstream", e);
 		}
 	    }
 	}

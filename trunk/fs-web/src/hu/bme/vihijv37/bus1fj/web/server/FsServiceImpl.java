@@ -38,7 +38,11 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	    List<UploadDto> ret = new ArrayList<UploadDto>(userUploads.size());
 	    for (Upload upload : userUploads) {
 		UploadDto dto = Converter.convert(upload);
-		dto.setPath(ServerUtils.getUploadDirRelativePath(user, upload.getPath()));
+		/*
+		 * DB-ben csak a user-dir-relatív útvonalak vannak letárolva, de
+		 * kliens oldalon az "abszolút" útvonalra van szükség
+		 */
+		dto.setUrlPath(ServerUtils.getUploadDirRelativePath(user, upload.getPath()));
 		ret.add(dto);
 	    }
 	    return ret;
