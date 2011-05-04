@@ -13,4 +13,4 @@ Felhasznált library-k (fordításhoz szükséges)
 * Commons file upload (1.2.1): http://commons.apache.org/fileupload/
 * Java EE 5 API: http://www.oracle.com/technetwork/java/javaee/overview/index.html
 
-IDE: Eclipse Helios + GWT plugin (2.2.0)
+IDE: Eclipse Helios (3.6.1) + GWT plugin (2.2.0)
