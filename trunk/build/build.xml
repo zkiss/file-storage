@@ -15,26 +15,16 @@
 		<mkdir dir="${dir-dist}" />
 
 		<zip destfile="${dir-dist}\file-storage.zip">
+			<!-- TODO: minden projekthez ant target, hogy src dist -->
 			<!-- forrás -->
-			<zipfileset dir="${dir-common}\${src}" prefix="src\common" />
-			<zipfileset dir="${dir-schemagen}\${src}" prefix="src\schemagen" />
-			<zipfileset dir="${dir-web}\${src}" prefix="src\web\java" />
-			<zipfileset dir="${dir-web}\war" prefix="src\web\war" />
-
-			<!-- bináris -->
-			<zipfileset dir="${dir-common}\${dist}" prefix="bin" />
-			<zipfileset dir="${dir-web}\${dist}" prefix="bin" />
-
-			<!-- schemagen -->
-			<zipfileset dir="${dir-schemagen}\${dist}" prefix="schemagen" />
-			<zipfileset dir="${dir-lib}\hibernate" prefix="schemagen\lib" />
-
-			<!-- libek -->
-			<zipfileset dir="${dir-lib}" prefix="lib" includes="mysql-connector-java-5.0.8-bin.jar" />
-			<zipfileset dir="${dir-lib}" prefix="lib" includes="commons-logging.jar" />
+			<zipfileset dir="${trunk}">
+				<exclude name="**\*.class" />
+				<exclude name="**\*.jar"  />
+				<exclude name="**\*.zip"  />
+			</zipfileset>
 
 			<!-- doksik -->
-			<!-- TODO -->
+			<zipfileset file="${basedir}\readme.txt" />
 		</zip>
 	</target>
 
