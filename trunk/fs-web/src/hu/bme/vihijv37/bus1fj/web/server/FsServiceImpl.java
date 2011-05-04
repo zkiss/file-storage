@@ -64,7 +64,7 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	try {
 	    user = new FsServiceDao(em).getUser(userName, ServerUtils.hashPassword(password));
 	    if (user == null) {
-		throw new ServiceException("No such user");
+		throw new ServiceException("Incorrent password or username");
 	    }
 	    FsServiceImpl.LOG.info("User logged in: " + user);
 	    return Converter.convert(user);
