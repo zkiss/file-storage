@@ -2,6 +2,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import hu.bme.vihijv37.bus1fj.web.server.PasswordHash;
 import hu.bme.vihijv37.bus1fj.web.server.entity.User;
 
 import org.apache.commons.logging.Log;
@@ -39,7 +40,7 @@ public class SchemaGen {
 	    User user = new User();
 	    user.setEmail(SchemaGen.DEFAULT_USER_MAIL);
 	    user.setName(SchemaGen.DEFAULT_USER_NAME);
-	    user.setPassword(SchemaGen.DEFAULT_USER_PASSWORD);
+	    user.setPassword(PasswordHash.hashPassword(SchemaGen.DEFAULT_USER_PASSWORD));
 
 	    em.getTransaction().begin();
 	    em.persist(user);
