@@ -1,4 +1,4 @@
-package hu.bme.vihijv37.bus1fj.web.client.components;
+package hu.bme.vihijv37.bus1fj.web.client.screen;
 
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -6,57 +6,59 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 
 import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
+import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
 import hu.bme.vihijv37.bus1fj.web.client.GuiNames;
 
+/**
+ * Belépés után megjelenő menüsor
+ * 
+ * @author Zoltan Kiss
+ */
 public class MenuPanel extends Grid {
 
-    public MenuPanel() {
-	super(1, 4);
-	String currentUserName = ClientSession.getInstance().getCurrentUser() == null ? "unknown" : ClientSession.getInstance().getCurrentUser().getName();
+    private static final int ROWS = 1;
+    private static final int COLS = 4;
+    private static final int CELL_PADDING = 5;
 
-	Label welcomeLabel = new Label("Welcome, " + currentUserName + "!", false);
+    public MenuPanel() {
+	super(MenuPanel.ROWS, MenuPanel.COLS);
+	final String userName = ClientSession.getInstance().getCurrentUser() == null ? "unknown" : ClientSession.getInstance().getCurrentUser().getName();
+
+	final Label welcomeLabel = new Label("Welcome, " + userName + "!", false);
 	welcomeLabel.getElement().getStyle().setDisplay(Display.INLINE);
 	welcomeLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_DEFAULT);
 
-	Label welcomePageLabel = new Label("Welcome page", false);
+	final Label welcomePageLabel = new Label("Welcome page", false);
 	welcomePageLabel.setStyleName(GuiNames.STYLE_LINK);
 	welcomePageLabel.getElement().getStyle().setDisplay(Display.INLINE);
 	welcomePageLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	welcomePageLabel.addClickHandler(new ClickHandler() {
-
 	    @Override
 	    public void onClick(ClickEvent event) {
-		RootPanel.get(GuiNames.DOM_MAIN).clear();
-		RootPanel.get(GuiNames.DOM_MAIN).add(new WelcomePanel());
+		ClientUtil.goTo(new WelcomeScreen());
 	    }
 	});
 
-	Label settingsLabel = new Label("User settings", false);
+	final Label settingsLabel = new Label("User settings", false);
 	settingsLabel.setStyleName(GuiNames.STYLE_LINK);
 	settingsLabel.getElement().getStyle().setDisplay(Display.INLINE);
 	settingsLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	settingsLabel.addClickHandler(new ClickHandler() {
-
 	    @Override
 	    public void onClick(ClickEvent event) {
-		RootPanel.get(GuiNames.DOM_MAIN).clear();
-		RootPanel.get(GuiNames.DOM_MAIN).add(new UserSettingsPanel());
+		ClientUtil.goTo(new UserSettingsScreen());
 	    }
 	});
 
-	Label logoutLabel = new Label("Logout", false);
+	final Label logoutLabel = new Label("Logout", false);
 	logoutLabel.setStyleName(GuiNames.STYLE_LINK);
 	logoutLabel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 	logoutLabel.addClickHandler(new ClickHandler() {
-
 	    @Override
 	    public void onClick(ClickEvent event) {
-		ClientSession.getInstance().setCurrentUser(null);
-		RootPanel.get(GuiNames.DOM_MAIN).clear();
-		RootPanel.get(GuiNames.DOM_MAIN).add(new LoginScreen());
+		ClientUtil.logout();
 	    }
 	});
 
@@ -69,7 +71,7 @@ public class MenuPanel extends Grid {
     }
 
     private void setGridStyle() {
-	this.setCellPadding(5);
+	this.setCellPadding(MenuPanel.CELL_PADDING);
 	this.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_DEFAULT);
 	this.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_RIGHT);
 	this.getCellFormatter().setHorizontalAlignment(0, 2, HasHorizontalAlignment.ALIGN_RIGHT);

@@ -1,4 +1,4 @@
-package hu.bme.vihijv37.bus1fj.web.client.components;
+package hu.bme.vihijv37.bus1fj.web.client.screen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -10,15 +10,12 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import hu.bme.vihijv37.bus1fj.web.client.AbstractAsyncCallback;
-import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
-import hu.bme.vihijv37.bus1fj.web.client.GuiNames;
-import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
+import hu.bme.vihijv37.bus1fj.web.client.dialog.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UserDto;
 
 public class RegisterScreen extends VerticalPanel {
@@ -100,25 +97,25 @@ public class RegisterScreen extends VerticalPanel {
 	    ret = false;
 	}
 	if (!ret) {
-	    MessageDialog.show("Message", "Please fill all field!", null);
+	    MessageDialog.show("Message", "All fields must be filled", null);
 	}
 
 	if (!this.passwordTextBox.getText().equals(this.reTypePasswordTextBox.getText())) {
 	    ret = false;
-	    MessageDialog.show("Message", "Passwords do not match!", null);
+	    MessageDialog.show("Message", "Passwords do not match", null);
 	}
 	return ret;
     }
 
     private void doRegister() {
 	if (RegisterScreen.this.checkFields()) {
-	    ClientUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), RegisterScreen.this.emailTextBox.getText(),
-		    RegisterScreen.this.passwordTextBox.getText(), new AbstractAsyncCallback<UserDto>() {
+	    ClientUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), //
+		    RegisterScreen.this.emailTextBox.getText(), //
+		    RegisterScreen.this.passwordTextBox.getText(), //
+		    new AbstractAsyncCallback<UserDto>() {
 			@Override
 			public void onSuccess(UserDto result) {
-			    ClientSession.getInstance().setCurrentUser(result);
-			    RootPanel.get(GuiNames.DOM_MAIN).clear();
-			    RootPanel.get(GuiNames.DOM_MAIN).add(new WelcomePanel());
+			    ClientUtil.login(result);
 			}
 		    });
 	}

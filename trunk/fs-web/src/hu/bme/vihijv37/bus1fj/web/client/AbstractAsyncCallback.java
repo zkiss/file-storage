@@ -2,7 +2,7 @@ package hu.bme.vihijv37.bus1fj.web.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
+import hu.bme.vihijv37.bus1fj.web.client.dialog.MessageDialog;
 import hu.bme.vihijv37.bus1fj.web.shared.exception.ServiceException;
 
 public abstract class AbstractAsyncCallback<T> implements AsyncCallback<T> {

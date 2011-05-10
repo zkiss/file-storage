@@ -1,4 +1,4 @@
-package hu.bme.vihijv37.bus1fj.web.client.owncomponents;
+package hu.bme.vihijv37.bus1fj.web.client.dialog;
 
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
