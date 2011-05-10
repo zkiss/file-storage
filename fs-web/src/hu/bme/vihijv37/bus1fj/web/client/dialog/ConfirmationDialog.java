@@ -1,4 +1,4 @@
-package hu.bme.vihijv37.bus1fj.web.client.owncomponents;
+package hu.bme.vihijv37.bus1fj.web.client.dialog;
 
 import java.util.List;
 

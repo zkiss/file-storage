@@ -1,4 +1,4 @@
-package hu.bme.vihijv37.bus1fj.web.client.components;
+package hu.bme.vihijv37.bus1fj.web.client.screen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,21 +28,21 @@ import hu.bme.vihijv37.bus1fj.web.client.AbstractAsyncCallback;
 import hu.bme.vihijv37.bus1fj.web.client.ClientSession;
 import hu.bme.vihijv37.bus1fj.web.client.ClientUtil;
 import hu.bme.vihijv37.bus1fj.web.client.GuiNames;
-import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationCallback;
-import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog;
-import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.ConfirmOption;
-import hu.bme.vihijv37.bus1fj.web.client.owncomponents.ConfirmationDialog.Option;
-import hu.bme.vihijv37.bus1fj.web.client.owncomponents.MessageDialog;
+import hu.bme.vihijv37.bus1fj.web.client.dialog.ConfirmationCallback;
+import hu.bme.vihijv37.bus1fj.web.client.dialog.ConfirmationDialog;
+import hu.bme.vihijv37.bus1fj.web.client.dialog.MessageDialog;
+import hu.bme.vihijv37.bus1fj.web.client.dialog.ConfirmationDialog.ConfirmOption;
+import hu.bme.vihijv37.bus1fj.web.client.dialog.ConfirmationDialog.Option;
 import hu.bme.vihijv37.bus1fj.web.shared.UploadFormConstants;
 import hu.bme.vihijv37.bus1fj.web.shared.dto.UploadDto;
 
-public class WelcomePanel extends VerticalPanel {
+public class WelcomeScreen extends VerticalPanel {
 
     private static final String WIDTH = "696px";
     private FlexTable contentTable;
     private List<UploadDto> uploadList;
 
-    public WelcomePanel() {
+    public WelcomeScreen() {
 	this.add(new MenuPanel());
 	this.contentTable = new FlexTable();
 	this.contentTable.setWidth("800px");
@@ -72,7 +72,7 @@ public class WelcomePanel extends VerticalPanel {
 			@Override
 			public void onConfirmation(Boolean result) {
 			    if ((result != null) && result) {
-				WelcomePanel.this.removeFile(upload);
+				WelcomeScreen.this.removeFile(upload);
 			    }
 			}
 		    };
@@ -81,7 +81,7 @@ public class WelcomePanel extends VerticalPanel {
 		}
 	    });
 	    this.contentTable.setWidget(row, 1, deleteBtn);
-	    this.contentTable.getCellFormatter().setWidth(row, 0, WelcomePanel.WIDTH);
+	    this.contentTable.getCellFormatter().setWidth(row, 0, WelcomeScreen.WIDTH);
 	    this.contentTable.getCellFormatter().setStyleName(row, 0, GuiNames.STYLE_TABLE_CELL);
 	    this.contentTable.getCellFormatter().setStyleName(row, 1, GuiNames.STYLE_TABLE_CELL);
 	    this.contentTable.getCellFormatter().setHorizontalAlignment(row, 1, HasHorizontalAlignment.ALIGN_RIGHT);
@@ -106,7 +106,7 @@ public class WelcomePanel extends VerticalPanel {
 	    @Override
 	    public void onClick(ClickEvent event) {
 		if ("".equals(uploader.getFilename())) {
-		    MessageDialog.show("Error", "Please select a file!", null);
+		    MessageDialog.show("Error", "Please select a file", null);
 		} else {
 		    formPanel.submit();
 		}
@@ -116,11 +116,11 @@ public class WelcomePanel extends VerticalPanel {
 	formPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 	    @Override
 	    public void onSubmitComplete(SubmitCompleteEvent event) {
-		MessageDialog.show("Info", "File uploaded successfully!", new CloseHandler<PopupPanel>() {
+		MessageDialog.show("Info", "File uploaded successfully", new CloseHandler<PopupPanel>() {
 
 		    @Override
 		    public void onClose(CloseEvent<PopupPanel> event) {
-			WelcomePanel.this.loadUserFiles();
+			WelcomeScreen.this.loadUserFiles();
 		    }
 		});
 	    }
@@ -135,11 +135,11 @@ public class WelcomePanel extends VerticalPanel {
 	ClientUtil.getService().getUserUploads(ClientSession.getInstance().getCurrentUser().getId(), new AbstractAsyncCallback<List<UploadDto>>() {
 	    @Override
 	    public void onSuccess(List<UploadDto> result) {
-		WelcomePanel.this.uploadList = result;
-		if (WelcomePanel.this.uploadList == null) {
-		    WelcomePanel.this.uploadList = new ArrayList<UploadDto>(0);
+		WelcomeScreen.this.uploadList = result;
+		if (WelcomeScreen.this.uploadList == null) {
+		    WelcomeScreen.this.uploadList = new ArrayList<UploadDto>(0);
 		}
-		WelcomePanel.this.createGui();
+		WelcomeScreen.this.createGui();
 	    }
 	});
     }
@@ -148,8 +148,8 @@ public class WelcomePanel extends VerticalPanel {
 	ClientUtil.getService().removeFile(file.getId(), new AbstractAsyncCallback<Void>() {
 	    @Override
 	    public void onSuccess(Void result) {
-		WelcomePanel.this.loadUserFiles();
-		MessageDialog.show("Info", "Remove succesfully!", null);
+		WelcomeScreen.this.loadUserFiles();
+		MessageDialog.show("Info", "File deleted", null);
 	    }
 	});
     }
