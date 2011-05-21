@@ -12,6 +12,19 @@ import hu.bme.vihijv37.bus1fj.web.server.entity.User;
 public final class ServerUtils {
 
     /**
+     * Visszaadja a pontos elérési útját egy feltöltésnek a szerveren
+     * 
+     * @param user
+     *            a feltöltés gazdája
+     * @param uploadPath
+     *            a fájl neve
+     * @return
+     */
+    public static File getUploadFile(User user, String uploadPath) {
+	return new File(ServerUtils.getUploadPath(user, uploadPath));
+    }
+
+    /**
      * A fájl elérési útját adja meg a webszerver publikus mappájához
      * viszonyítva
      * 
@@ -22,24 +35,10 @@ public final class ServerUtils {
      *            elérési útja (fájlnév)
      * @return
      */
-    public static String getUploadDirRelativePath(User user, String uploadPath) {
+    public static String getUploadPath(User user, String uploadPath) {
 	return ServerProperties.getUploadDirectory().getPath() + File.separator + //
 		user.getEmail() + File.separator + //
 		uploadPath;
-    }
-
-    /**
-     * Visszaadja a pontos elérési útját egy feltöltésnek a szerveren
-     * 
-     * @param user
-     *            a feltöltés gazdája
-     * @param uploadPath
-     *            a fájl neve
-     * @return
-     */
-    public static File getUploadFile(User user, String uploadPath) {
-	return new File(ServerProperties.getUploadDirectory(), //
-		ServerUtils.getUploadDirRelativePath(user, uploadPath));
     }
 
     /**
