@@ -48,7 +48,7 @@ public class SchemaGen {
 	    System.out.println("A user was successfully created with the following credentials:\n" //
 		    + "Loginname (email): " + user.getEmail() + "\n" //
 		    + "Username: " + user.getName() + "\n" //
-		    + "Password: " + user.getPassword());
+		    + "Password: " + SchemaGen.DEFAULT_USER_PASSWORD);
 	} finally {
 	    if (em.getTransaction().isActive()) {
 		em.getTransaction().rollback();

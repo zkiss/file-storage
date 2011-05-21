@@ -36,15 +36,15 @@ import org.apache.commons.logging.LogFactory;
 public class FileUploaderServlet extends HttpServlet implements Servlet {
 
     private static final long serialVersionUID = 4157585117575772801L;
+    private static final String RESPONSE_CONTENT_TYPE = "text/plain";
     private static final Log LOG = LogFactory.getLog(FileUploaderServlet.class);
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	response.setContentType("text/plain");
+	response.setContentType(FileUploaderServlet.RESPONSE_CONTENT_TYPE);
 	FileItem uploadItem = this.getFileItem(request, UploadFormConstants.UPLOADER_FORM_ELEMENT_ID);
 	if (uploadItem == null) {
-	    FileUploaderServlet.LOG.debug("Did not receive file upload");
-	    response.getWriter().write("NO-SCRIPT-DATA");
+	    response.getWriter().write("Did not receive file upload");
 	    return;
 	}
 
@@ -58,12 +58,16 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 
 	    User user = dao.get(User.class, userId);
 	    final String uploadPath = uploadItem.getName();
-	    destinationFile = new File(ServerUtils.getUploadDirRelativePath(user, uploadPath));
+	    // ide lesz lementve a fájl
+	    destinationFile = ServerUtils.getUploadFile(user, uploadPath);
+	    // a fájl tárolómappáját létrehozzuk, ha kell
 	    File uploadDir = destinationFile.getParentFile();
 	    if (!uploadDir.exists() && !uploadDir.mkdirs()) {
 		FileUploaderServlet.LOG.error("Could not create directory: " + uploadDir.getAbsolutePath());
+		response.getWriter().write("An internal server error occured");
 	    } else {
 		if (destinationFile.createNewFile()) {
+		    // a fájl még nem létezik, létrehozzuk és lementjük DB-be is
 		    uploadItem.write(destinationFile);
 
 		    Upload upload = new Upload();
@@ -75,16 +79,25 @@ public class FileUploaderServlet extends HttpServlet implements Servlet {
 		    dao.insert(upload);
 		    transaction.commit();
 		} else {
-		    FileUploaderServlet.LOG.info("File already exists: " + destinationFile.getAbsolutePath());
+		    FileUploaderServlet.LOG.warn("File already exists: " + destinationFile.getAbsolutePath());
+		    response.getWriter().write("File already exists");
 		}
 	    }
 	} catch (Exception e) {
+	    response.getWriter().write("An internal server error occured");
 	    FileUploaderServlet.LOG.error("Could not save upload", e);
-	    if ((destinationFile != null) && destinationFile.exists() && destinationFile.delete()) {
+	    if ((destinationFile != null) && destinationFile.exists() && !destinationFile.delete()) {
+		/*
+		 * A fájlt már létrehoztuk, de valami miatt exception dobódott.
+		 * Ilyenkor a fájlt törölni kell, de ez a törlés sem sikerült.
+		 * Kézzel kell a fájlt eltávolítani az adminisztrátornak, ezért
+		 * ezt kilogoljuk.
+		 */
 		FileUploaderServlet.LOG.fatal( //
 			"An error occured during the file upload process and could not delete the uploaded file, this file should be manually removed: "
 				+ destinationFile.getAbsolutePath());
 	    }
+	} finally {
 	    if ((transaction != null) && transaction.isActive()) {
 		transaction.rollback();
 	    }

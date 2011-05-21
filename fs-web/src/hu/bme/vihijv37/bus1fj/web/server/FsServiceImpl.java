@@ -40,9 +40,11 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 		UploadDto dto = Converter.convert(upload);
 		/*
 		 * DB-ben csak a user-dir-relatív útvonalak vannak letárolva, de
-		 * kliens oldalon az "abszolút" útvonalra van szükség
+		 * kliens oldalon az "abszolút" útvonalra van szükség. URL
+		 * esetén "/" path separatort kell használni
 		 */
-		dto.setUrlPath(ServerUtils.getUploadDirRelativePath(user, upload.getPath()));
+		dto.setUrlPath(ServerUtils.getUploadPath(user, upload.getPath()). //
+			replace(File.separator, "/"));
 		ret.add(dto);
 	    }
 	    return ret;
@@ -115,7 +117,7 @@ public class FsServiceImpl extends RemoteServiceServlet implements FsService {
 	EntityTransaction transaction = em.getTransaction();
 	try {
 	    FsServiceDao dao = new FsServiceDao(em);
-	    hu.bme.vihijv37.bus1fj.web.server.entity.Upload upload = dao.get(Upload.class, uploadId);
+	    Upload upload = dao.get(Upload.class, uploadId);
 	    transaction.begin();
 	    dao.delete(Upload.class, uploadId);
 	    File uploadedFile = ServerUtils.getUploadFile(upload.getUser(), upload.getPath());

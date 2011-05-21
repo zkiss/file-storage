@@ -34,16 +34,11 @@ public class LoginScreen extends VerticalPanel {
     private static final String CONTENT_WIDTH = "300px";
     private static final String WIDTH = "820px";
 
-    private final Button loginBtn;
     private final FlexTable contentTable;
     private final TextBox userNameTextBox;
     private final PasswordTextBox passwordTextBox;
-    private final HorizontalPanel registerNowPanel;
-    private final Label linkToRegisterLabel;
 
     public LoginScreen() {
-	this.registerNowPanel = new HorizontalPanel();
-	this.contentTable = new FlexTable();
 	this.userNameTextBox = new TextBox();
 	this.passwordTextBox = new PasswordTextBox();
 	this.passwordTextBox.addKeyDownHandler(new KeyDownHandler() {
@@ -64,16 +59,33 @@ public class LoginScreen extends VerticalPanel {
 	    }
 	});
 
-	this.loginBtn = new Button("Login", new ClickHandler() {
+	this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+	this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+	this.setWidth(LoginScreen.WIDTH);
+
+	this.contentTable = new FlexTable();
+	this.setupContentTable();
+	this.add(this.contentTable);
+
+	final HorizontalPanel registerNowPanel = new HorizontalPanel();
+	registerNowPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+	registerNowPanel.getElement().getStyle().setPaddingTop(15, Unit.PX);
+	registerNowPanel.setSpacing(2);
+
+	registerNowPanel.add(new Label("Not registered?"));
+
+	final Label createAccountLabel = new Label("Create a free account now!");
+	createAccountLabel.setStyleName(GuiNames.STYLE_LINK);
+	createAccountLabel.addClickHandler(new ClickHandler() {
 	    @Override
 	    public void onClick(ClickEvent event) {
-		LoginScreen.this.doLogin();
+		ClientUtil.goTo(new RegisterScreen());
 	    }
 	});
-	this.linkToRegisterLabel = new Label("Create a free account now!");
+	registerNowPanel.add(createAccountLabel);
+	this.add(registerNowPanel);
 
-	this.initPanel();
-	this.createGui();
+	this.userNameTextBox.setFocus(true);
     }
 
     private boolean checkFields() {
@@ -85,31 +97,6 @@ public class LoginScreen extends VerticalPanel {
 	    ret = false;
 	}
 	return ret;
-    }
-
-    private void createGui() {
-	this.setupContentTable();
-	this.createRegisterNowPanel();
-	this.add(this.contentTable);
-	this.add(this.registerNowPanel);
-	this.userNameTextBox.setFocus(true);
-    }
-
-    private void createRegisterNowPanel() {
-	this.registerNowPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-	this.registerNowPanel.getElement().getStyle().setPaddingTop(15, Unit.PX);
-	this.registerNowPanel.setSpacing(2);
-
-	this.linkToRegisterLabel.setStyleName(GuiNames.STYLE_LINK);
-	this.linkToRegisterLabel.addClickHandler(new ClickHandler() {
-	    @Override
-	    public void onClick(ClickEvent event) {
-		ClientUtil.goTo(new RegisterScreen());
-	    }
-	});
-
-	this.registerNowPanel.add(new Label("Not registered?"));
-	this.registerNowPanel.add(this.linkToRegisterLabel);
     }
 
     private void doLogin() {
@@ -125,12 +112,6 @@ public class LoginScreen extends VerticalPanel {
 	    MessageDialog.show("Error", "Please enter your username and password", null);
 	}
 
-    }
-
-    private void initPanel() {
-	this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-	this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-	this.setWidth(LoginScreen.WIDTH);
     }
 
     private void setupContentTable() {
@@ -153,7 +134,12 @@ public class LoginScreen extends VerticalPanel {
 	row++;
 	this.contentTable.getFlexCellFormatter().setColSpan(row, 0, 2);
 	this.contentTable.getCellFormatter().setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT);
-	this.contentTable.setWidget(row, 0, this.loginBtn);
+	this.contentTable.setWidget(row, 0, new Button("Login", new ClickHandler() {
+	    @Override
+	    public void onClick(ClickEvent event) {
+		LoginScreen.this.doLogin();
+	    }
+	}));
     }
 
 }
