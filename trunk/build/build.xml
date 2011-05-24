@@ -5,7 +5,7 @@
 
 	<property name="dir-dist" value="dist" />
 
-	<target name="dist-src" depends="dist-src-all">
+	<target name="dist-src" depends="dist-src-all" description="Összeállítja a beadandó anyagot">
 		<delete dir="${dir-dist}" />
 		<mkdir dir="${dir-dist}" />
 
@@ -27,13 +27,7 @@
 		</zip>
 	</target>
 
-	<target name="clean-all">
-		<delete dir="${dist-all}" />
-		<ant dir="${dir-common}" target="clean" />
-		<ant dir="${dir-web}" target="clean" />
-	</target>
-
-	<target name="dist-src-all">
+	<target name="dist-src-all" description="Az összes projekten meghívja a dist-src targetet">
 		<ant dir="${dir-common}" target="dist-src" />
 		<ant dir="${dir-schemagen}" target="dist-src" />
 		<ant dir="${dir-web}" target="dist-src" />
