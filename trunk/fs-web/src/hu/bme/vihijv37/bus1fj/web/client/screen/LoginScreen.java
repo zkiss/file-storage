@@ -34,12 +34,39 @@ public class LoginScreen extends VerticalPanel {
     private static final String CONTENT_WIDTH = "300px";
     private static final String WIDTH = "820px";
 
-    private final FlexTable contentTable;
     private final TextBox userNameTextBox;
     private final PasswordTextBox passwordTextBox;
 
     public LoginScreen() {
+	this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+	this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+	this.setWidth(LoginScreen.WIDTH);
+
+	final FlexTable contentTable = new FlexTable();
+	contentTable.setWidth(LoginScreen.CONTENT_WIDTH);
+	contentTable.getCellFormatter().setWidth(0, 0, LoginScreen.COL1_WIDTH);
+	contentTable.getCellFormatter().setWidth(0, 1, LoginScreen.COL2_WIDTH);
+	contentTable.getCellFormatter().setWidth(1, 0, LoginScreen.COL1_WIDTH);
+	contentTable.getCellFormatter().setWidth(1, 1, LoginScreen.COL2_WIDTH);
+
+	// email
+	int row = 0;
+	contentTable.setText(row, 0, "E-mail");
 	this.userNameTextBox = new TextBox();
+	this.userNameTextBox.addKeyDownHandler(new KeyDownHandler() {
+	    @Override
+	    public void onKeyDown(KeyDownEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+		    LoginScreen.this.doLogin();
+		}
+	    }
+	});
+	contentTable.setWidget(row, 1, this.userNameTextBox);
+	this.userNameTextBox.setWidth(LoginScreen.COL1_WIDTH);
+
+	// password
+	row++;
+	contentTable.setText(row, 0, "Password");
 	this.passwordTextBox = new PasswordTextBox();
 	this.passwordTextBox.addKeyDownHandler(new KeyDownHandler() {
 	    @Override
@@ -49,24 +76,22 @@ public class LoginScreen extends VerticalPanel {
 		}
 	    }
 	});
+	contentTable.setWidget(row, 1, this.passwordTextBox);
+	this.passwordTextBox.setWidth(LoginScreen.COL2_WIDTH);
 
-	this.userNameTextBox.addKeyDownHandler(new KeyDownHandler() {
+	// login button
+	row++;
+	contentTable.getFlexCellFormatter().setColSpan(row, 0, 2);
+	contentTable.getCellFormatter().setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT);
+	contentTable.setWidget(row, 0, new Button("Login", new ClickHandler() {
 	    @Override
-	    public void onKeyDown(KeyDownEvent event) {
-		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-		    LoginScreen.this.doLogin();
-		}
+	    public void onClick(ClickEvent event) {
+		LoginScreen.this.doLogin();
 	    }
-	});
+	}));
+	this.add(contentTable);
 
-	this.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-	this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-	this.setWidth(LoginScreen.WIDTH);
-
-	this.contentTable = new FlexTable();
-	this.setupContentTable();
-	this.add(this.contentTable);
-
+	// regisztrációs link
 	final HorizontalPanel registerNowPanel = new HorizontalPanel();
 	registerNowPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 	registerNowPanel.getElement().getStyle().setPaddingTop(15, Unit.PX);
@@ -83,6 +108,7 @@ public class LoginScreen extends VerticalPanel {
 	    }
 	});
 	registerNowPanel.add(createAccountLabel);
+
 	this.add(registerNowPanel);
 
 	this.userNameTextBox.setFocus(true);
@@ -100,9 +126,9 @@ public class LoginScreen extends VerticalPanel {
     }
 
     private void doLogin() {
-	if (LoginScreen.this.checkFields()) {
-	    ClientUtil.getService().login(LoginScreen.this.userNameTextBox.getText(), LoginScreen.this.passwordTextBox.getText(),
-		    new AbstractAsyncCallback<UserDto>() {
+	if (this.checkFields()) {
+	    ClientUtil.getService().login(this.userNameTextBox.getText(), //
+		    this.passwordTextBox.getText(), new AbstractAsyncCallback<UserDto>() {
 			@Override
 			public void onSuccess(UserDto result) {
 			    ClientUtil.login(result);
@@ -111,35 +137,6 @@ public class LoginScreen extends VerticalPanel {
 	} else {
 	    MessageDialog.show("Error", "Please enter your username and password", null);
 	}
-
-    }
-
-    private void setupContentTable() {
-	this.contentTable.setWidth(LoginScreen.CONTENT_WIDTH);
-	this.contentTable.getCellFormatter().setWidth(0, 0, LoginScreen.COL1_WIDTH);
-	this.contentTable.getCellFormatter().setWidth(0, 1, LoginScreen.COL2_WIDTH);
-	this.contentTable.getCellFormatter().setWidth(1, 0, LoginScreen.COL1_WIDTH);
-	this.contentTable.getCellFormatter().setWidth(1, 1, LoginScreen.COL2_WIDTH);
-
-	int row = 0;
-	this.contentTable.setText(row, 0, "User");
-	this.contentTable.setWidget(row, 1, this.userNameTextBox);
-	this.userNameTextBox.setWidth(LoginScreen.COL1_WIDTH);
-
-	row++;
-	this.contentTable.setText(row, 0, "Password");
-	this.contentTable.setWidget(row, 1, this.passwordTextBox);
-	this.passwordTextBox.setWidth(LoginScreen.COL2_WIDTH);
-
-	row++;
-	this.contentTable.getFlexCellFormatter().setColSpan(row, 0, 2);
-	this.contentTable.getCellFormatter().setHorizontalAlignment(row, 0, HasHorizontalAlignment.ALIGN_RIGHT);
-	this.contentTable.setWidget(row, 0, new Button("Login", new ClickHandler() {
-	    @Override
-	    public void onClick(ClickEvent event) {
-		LoginScreen.this.doLogin();
-	    }
-	}));
     }
 
 }
