@@ -25,7 +25,7 @@ public class RegisterScreen extends VerticalPanel {
     private final TextBox emailTextBox;
     private final TextBox userNameTextBox;
     private final PasswordTextBox passwordTextBox;
-    private final PasswordTextBox reTypePasswordTextBox;
+    private final PasswordTextBox password2TextBox;
 
     public RegisterScreen() {
 	final FlexTable contentTable = new FlexTable();
@@ -61,9 +61,9 @@ public class RegisterScreen extends VerticalPanel {
 	row++;
 
 	contentTable.setText(row, 0, "Confirm password");
-	this.reTypePasswordTextBox = new PasswordTextBox();
-	contentTable.setWidget(row, 1, this.reTypePasswordTextBox);
-	this.reTypePasswordTextBox.setWidth(RegisterScreen.COL2_WIDTH);
+	this.password2TextBox = new PasswordTextBox();
+	contentTable.setWidget(row, 1, this.password2TextBox);
+	this.password2TextBox.setWidth(RegisterScreen.COL2_WIDTH);
 	row++;
 
 	contentTable.getFlexCellFormatter().setColSpan(row, 0, 2);
@@ -90,19 +90,19 @@ public class RegisterScreen extends VerticalPanel {
 	    ret = false;
 	}
 	if (!ret) {
-	    MessageDialog.show("Message", "All fields must be filled", null);
-	} else if (!this.passwordTextBox.getText().equals(this.reTypePasswordTextBox.getText())) {
+	    MessageDialog.show("Error", "All fields must be filled", null);
+	} else if (!this.passwordTextBox.getText().equals(this.password2TextBox.getText())) {
 	    ret = false;
-	    MessageDialog.show("Message", "Passwords do not match", null);
+	    MessageDialog.show("Error", "Passwords do not match", null);
 	}
 	return ret;
     }
 
     private void doRegister() {
-	if (RegisterScreen.this.checkFields()) {
-	    ClientUtil.getService().register(RegisterScreen.this.userNameTextBox.getText(), //
-		    RegisterScreen.this.emailTextBox.getText(), //
-		    RegisterScreen.this.passwordTextBox.getText(), //
+	if (this.checkFields()) {
+	    ClientUtil.getService().register(this.userNameTextBox.getText(), //
+		    this.emailTextBox.getText(), //
+		    this.passwordTextBox.getText(), //
 		    new AbstractAsyncCallback<UserDto>() {
 			@Override
 			public void onSuccess(UserDto result) {
@@ -110,7 +110,6 @@ public class RegisterScreen extends VerticalPanel {
 			}
 		    });
 	}
-
     }
 
 }

@@ -53,6 +53,7 @@ public class WelcomeScreen extends VerticalPanel {
 	this.uploadsTable.setWidth(WelcomeScreen.CONTENT_WIDTH);
 	this.uploadsTable.setCellSpacing(0);
 	captionPanel.add(this.uploadsTable);
+
 	this.add(captionPanel);
 
 	this.loadUserFiles();

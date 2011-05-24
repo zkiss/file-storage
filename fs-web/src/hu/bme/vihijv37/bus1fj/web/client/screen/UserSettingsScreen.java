@@ -37,6 +37,7 @@ public class UserSettingsScreen extends VerticalPanel {
 
     public UserSettingsScreen() {
 	this.add(new MenuPanel());
+
 	final Grid grid = new Grid(UserSettingsScreen.ROWS, UserSettingsScreen.COLS);
 
 	int row = 0;
@@ -133,7 +134,10 @@ public class UserSettingsScreen extends VerticalPanel {
 
     private void doSave() {
 	if (this.checkFields()) {
-	    this.setFields();
+	    this.currentUser.setName(this.userNameTb.getText());
+	    String pass = this.passTb.getText();
+	    this.currentUser.setPassword(!"".equals(pass) ? pass : null);
+
 	    ClientUtil.getService().updateUser(this.currentUser, new AbstractAsyncCallback<UserDto>() {
 		@Override
 		public void onSuccess(UserDto result) {
@@ -143,12 +147,6 @@ public class UserSettingsScreen extends VerticalPanel {
 		}
 	    });
 	}
-    }
-
-    private void setFields() {
-	this.currentUser.setName(this.userNameTb.getText());
-	String pass = this.passTb.getText();
-	this.currentUser.setPassword(!"".equals(pass) ? pass : null);
     }
 
     private void setRowSizeAndAlignment(int row, Grid grid) {
