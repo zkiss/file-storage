@@ -42,7 +42,7 @@ public class WelcomeScreen extends VerticalPanel {
     private static final String CONTENT_WIDTH = "800px";
     private static final String COL1_WIDTH = "696px";
 
-    private FlexTable uploadsTable;
+    private final FlexTable uploadsTable;
 
     public WelcomeScreen() {
 	this.add(new MenuPanel());
